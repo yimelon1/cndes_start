@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="645000000fs"></ZoomStartTime>
+      <ZoomEndTime time="2079000001fs"></ZoomEndTime>
+      <Cursor1Time time="1625000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="192"></NameColumnWidth>
+      <ValueColumnWidth column_width="122"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="22" />
+   <wvobject fp_name="/tb/tot_cycle" type="array">
+      <obj_property name="ElementShortName">tot_cycle[31:0]</obj_property>
+      <obj_property name="ObjectShortName">tot_cycle[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/cpt_cycle" type="array">
+      <obj_property name="ElementShortName">cpt_cycle[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cpt_cycle[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/S_AXIS_MM2S_TVALID" type="logic">
+      <obj_property name="ElementShortName">S_AXIS_MM2S_TVALID</obj_property>
+      <obj_property name="ObjectShortName">S_AXIS_MM2S_TVALID</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/S_AXIS_MM2S_TREADY" type="logic">
+      <obj_property name="ElementShortName">S_AXIS_MM2S_TREADY</obj_property>
+      <obj_property name="ObjectShortName">S_AXIS_MM2S_TREADY</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/S_AXIS_MM2S_TDATA" type="array">
+      <obj_property name="ElementShortName">S_AXIS_MM2S_TDATA[63:0]</obj_property>
+      <obj_property name="ObjectShortName">S_AXIS_MM2S_TDATA[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/S_AXIS_MM2S_TKEEP" type="array">
+      <obj_property name="ElementShortName">S_AXIS_MM2S_TKEEP[7:0]</obj_property>
+      <obj_property name="ObjectShortName">S_AXIS_MM2S_TKEEP[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/S_AXIS_MM2S_TLAST" type="array">
+      <obj_property name="ElementShortName">S_AXIS_MM2S_TLAST[0:0]</obj_property>
+      <obj_property name="ObjectShortName">S_AXIS_MM2S_TLAST[0:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/M_AXIS_S2MM_TVALID" type="logic">
+      <obj_property name="ElementShortName">M_AXIS_S2MM_TVALID</obj_property>
+      <obj_property name="ObjectShortName">M_AXIS_S2MM_TVALID</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/M_AXIS_S2MM_TREADY" type="logic">
+      <obj_property name="ElementShortName">M_AXIS_S2MM_TREADY</obj_property>
+      <obj_property name="ObjectShortName">M_AXIS_S2MM_TREADY</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/M_AXIS_S2MM_TDATA" type="array">
+      <obj_property name="ElementShortName">M_AXIS_S2MM_TDATA[63:0]</obj_property>
+      <obj_property name="ObjectShortName">M_AXIS_S2MM_TDATA[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/M_AXIS_S2MM_TKEEP" type="array">
+      <obj_property name="ElementShortName">M_AXIS_S2MM_TKEEP[7:0]</obj_property>
+      <obj_property name="ObjectShortName">M_AXIS_S2MM_TKEEP[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/M_AXIS_S2MM_TLAST" type="array">
+      <obj_property name="ElementShortName">M_AXIS_S2MM_TLAST[0:0]</obj_property>
+      <obj_property name="ObjectShortName">M_AXIS_S2MM_TLAST[0:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/aclk" type="logic">
+      <obj_property name="ElementShortName">aclk</obj_property>
+      <obj_property name="ObjectShortName">aclk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/aresetn" type="logic">
+      <obj_property name="ElementShortName">aresetn</obj_property>
+      <obj_property name="ObjectShortName">aresetn</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/done" type="logic">
+      <obj_property name="ElementShortName">done</obj_property>
+      <obj_property name="ObjectShortName">done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/top_inst/conv_core/din_isif_empty_n" type="logic">
+      <obj_property name="ElementShortName">din_isif_empty_n</obj_property>
+      <obj_property name="ObjectShortName">din_isif_empty_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/top_inst/conv_core/dout_isif_read" type="logic">
+      <obj_property name="ElementShortName">dout_isif_read</obj_property>
+      <obj_property name="ObjectShortName">dout_isif_read</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/top_inst/conv_core/current_state" type="array">
+      <obj_property name="ElementShortName">current_state[3:0]</obj_property>
+      <obj_property name="ObjectShortName">current_state[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/top_inst/conv_core/next_state" type="array">
+      <obj_property name="ElementShortName">next_state[3:0]</obj_property>
+      <obj_property name="ObjectShortName">next_state[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/top_inst/conv_core/cnt_bias" type="array">
+      <obj_property name="ElementShortName">cnt_bias[7:0]</obj_property>
+      <obj_property name="ObjectShortName">cnt_bias[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/top_inst/conv_core/start_flag" type="logic">
+      <obj_property name="ElementShortName">start_flag</obj_property>
+      <obj_property name="ObjectShortName">start_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/top_inst/conv_core/en_ct" type="logic">
+      <obj_property name="ElementShortName">en_ct</obj_property>
+      <obj_property name="ObjectShortName">en_ct</obj_property>
+   </wvobject>
+</wave_config>
