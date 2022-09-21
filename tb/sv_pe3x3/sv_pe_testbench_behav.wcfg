@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="sv_pe_testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="sv_pe_testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="837000001fs"></ZoomEndTime>
+      <Cursor1Time time="109000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="192"></NameColumnWidth>
+      <ValueColumnWidth column_width="118"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="30" />
+   <wvobject fp_name="/sv_pe_testbench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start" type="logic">
+      <obj_property name="ElementShortName">cv_start</obj_property>
+      <obj_property name="ObjectShortName">cv_start</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start" type="logic">
+      <obj_property name="ElementShortName">cv_start</obj_property>
+      <obj_property name="ObjectShortName">cv_start</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly0" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly0</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly0</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly1" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly1</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly1</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly2" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly2</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly3" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly3</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly3</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly4" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly4</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly4</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly5" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly5</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly5</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly6" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly6</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly6</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cv_start_dly7" type="logic">
+      <obj_property name="ElementShortName">cv_start_dly7</obj_property>
+      <obj_property name="ObjectShortName">cv_start_dly7</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cycle" type="array">
+      <obj_property name="ElementShortName">cycle[30:0]</obj_property>
+      <obj_property name="ObjectShortName">cycle[30:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/act_shf" type="array">
+      <obj_property name="ElementShortName">act_shf[0:7][63:0]</obj_property>
+      <obj_property name="ObjectShortName">act_shf[0:7][63:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/ker_shf" type="array">
+      <obj_property name="ElementShortName">ker_shf[0:7][63:0]</obj_property>
+      <obj_property name="ObjectShortName">ker_shf[0:7][63:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/knn00" type="array">
+      <obj_property name="ElementShortName">knn00[0:7][63:0]</obj_property>
+      <obj_property name="ObjectShortName">knn00[0:7][63:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/i0" type="array">
+      <obj_property name="ElementShortName">i0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i0[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/i1" type="array">
+      <obj_property name="ElementShortName">i1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i1[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k0" type="array">
+      <obj_property name="ElementShortName">k0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k0[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k1" type="array">
+      <obj_property name="ElementShortName">k1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k1[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k2" type="array">
+      <obj_property name="ElementShortName">k2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k3" type="array">
+      <obj_property name="ElementShortName">k3[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k3[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k4" type="array">
+      <obj_property name="ElementShortName">k4[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k4[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k5" type="array">
+      <obj_property name="ElementShortName">k5[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k5[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k6" type="array">
+      <obj_property name="ElementShortName">k6[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k6[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/k7" type="array">
+      <obj_property name="ElementShortName">k7[31:0]</obj_property>
+      <obj_property name="ObjectShortName">k7[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/TBITS" type="array">
+      <obj_property name="ElementShortName">TBITS[31:0]</obj_property>
+      <obj_property name="ObjectShortName">TBITS[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/TBYTE" type="array">
+      <obj_property name="ElementShortName">TBYTE[31:0]</obj_property>
+      <obj_property name="ObjectShortName">TBYTE[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/IFMAP_SIZE" type="array">
+      <obj_property name="ElementShortName">IFMAP_SIZE[31:0]</obj_property>
+      <obj_property name="ObjectShortName">IFMAP_SIZE[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/OFMAP_SIZE" type="array">
+      <obj_property name="ElementShortName">OFMAP_SIZE[31:0]</obj_property>
+      <obj_property name="ObjectShortName">OFMAP_SIZE[31:0]</obj_property>
+   </wvobject>
+</wave_config>

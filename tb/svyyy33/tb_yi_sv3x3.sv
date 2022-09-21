@@ -2,41 +2,53 @@
 
 
 `define SDFFILE    "./PE_SYN.sdf"	  // Modify your sdf file name
-`define RTL
-// `define GATE
+`define VIVA
+// `define RTL
+
 `define End_CYCLE  10000      // Modify cycle times once your design need more cycle times!
 `ifdef RTL
 	`timescale 1ns/100ps
     `define CYCLE 10
 	// `include "./pe_8v"
-    
 `endif
-`ifdef GATE
-	`timescale 1ns/1ps
-    `define CYCLE 3.3
-    
+`ifdef VIVA
+	`timescale 1ns/100ps
+    `define CYCLE 10
+	// `include "./pe_8v"
 `endif
+
+
+`ifdef VIVA
+	`define KER_DAT "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/2_w.dat"
+	`define KSR_0 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_0.dat"
+	`define KSR_1 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_1.dat"
+	`define KSR_2 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_2.dat"
+	`define KSR_3 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_3.dat"
+	`define KSR_4 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_4.dat"
+	`define KSR_5 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_5.dat"
+	`define KSR_6 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_6.dat"
+	`define KSR_7 "E:/yuan/v_code/proj0728/tb/svyyy33/PAT/w_sr/wsram_pat_7.dat"
+	`define IFMAP_DAT 	"E:/yuan/v_code/proj0728/tb/svyyy33/PAT/2_in.dat"
+	`define PEGD_DAT 	"E:/yuan/v_code/proj0728/tb/svyyy33/PAT/pe_out/peout.dat"
+`else
+	`define KER_DAT "PAT/2_w.dat"
+	`define KSR_0 "PAT/w_sr/wsram_pat_0.dat"
+	`define KSR_1 "PAT/w_sr/wsram_pat_1.dat"
+	`define KSR_2 "PAT/w_sr/wsram_pat_2.dat"
+	`define KSR_3 "PAT/w_sr/wsram_pat_3.dat"
+	`define KSR_4 "PAT/w_sr/wsram_pat_4.dat"
+	`define KSR_5 "PAT/w_sr/wsram_pat_5.dat"
+	`define KSR_6 "PAT/w_sr/wsram_pat_6.dat"
+	`define KSR_7 "PAT/w_sr/wsram_pat_7.dat"
+	`define IFMAP_DAT "PAT/2_in.dat"
+	`define PEGD_DAT "PAT/pe_out/peout.dat"
+`endif 
+
 
 //=========================================
 //++++
 //=============================================
 
-
-
-// E:/yuan/v_code/proj0728/tb/sv_pe3x3/PAT
-`define KER_DAT "PAT/2_w.dat"
-
-`define KSR_0 "PAT/w_sr/wsram_pat_0.dat"
-`define KSR_1 "PAT/w_sr/wsram_pat_1.dat"
-`define KSR_2 "PAT/w_sr/wsram_pat_2.dat"
-`define KSR_3 "PAT/w_sr/wsram_pat_3.dat"
-`define KSR_4 "PAT/w_sr/wsram_pat_4.dat"
-`define KSR_5 "PAT/w_sr/wsram_pat_5.dat"
-`define KSR_6 "PAT/w_sr/wsram_pat_6.dat"
-`define KSR_7 "PAT/w_sr/wsram_pat_7.dat"
-`define IFMAP_DAT "PAT/2_in.dat"
-`define PEGD_DAT "PAT/pe_out/peout.dat"
-// E:/yuan/v_code/proj0728/tb/sv_pe3x3/PAT/
 //-----------------------------------------------------------------------------------------------------------
 
 
@@ -50,6 +62,8 @@ parameter OFMAP_SIZE   = 346112;
 
 reg [31:0] pe_gold [0:40];
 
+
+localparam LO_STRIDE = 4 ;
 
 logic               clk = 0;              //input  
 logic reset = 0;
@@ -97,6 +111,9 @@ reg cv_start_dly6;
 reg cv_start_dly7;
 
 reg f_flag ;	// final mac in one iteration 3*3 full channel 
+reg f_flag_ed ;
+reg f_flag_ed1 ;
+reg f_flag_ed2 ;
 reg final_fg_dly1;
 reg final_fg_dly2;
 reg final_fg_dly3;
@@ -106,6 +123,8 @@ reg final_fg_dly6;
 reg final_fg_dly7;
 
 reg v_flag	;
+reg v_flag_ed		;
+reg v_flag_ed1		;
 reg valid_fg_dly1	;
 reg valid_fg_dly2	;
 reg valid_fg_dly3	;
@@ -114,12 +133,12 @@ reg valid_fg_dly5	;
 reg valid_fg_dly6	;
 reg valid_fg_dly7	;
 
-integer i0 , i1  ,cpt0;
+integer i0 , i1  ,cpt0 , cpt1;
 integer k0,k1,k2,k3,k4,k5,k6,k7 ;
 localparam KUNMM = 40 ;
 localparam TE_FIR = 36	; //3*3*32/8
 
-
+reg q_valid [0:7] ;
 
 always begin #(`CYCLE/2) clk = ~clk; end
 
@@ -141,11 +160,11 @@ initial begin
 		$fsdbDumpfile("dla_top.fsdb");
 		$fsdbDumpvars(0,"+mda","+packedmda");		//++
 		$fsdbDumpMDA();
-	`endif
-	`ifdef GATE
+	`elsif GATE
 		$sdf_annotate(`SDFFILE,top_U);
 		$fsdbDumpfile("dla_top_SYN.fsdb");
 		$fsdbDumpvars();
+	`else 
 	`endif
 end
 
@@ -192,8 +211,8 @@ pe_8e  #(
 	.act_5(		act_shf[0][23-:8]		) ,
 	.act_6(		act_shf[0][15-:8]		) ,
 	.act_7(		act_shf[0][ 7-:8]		) ,
-	.valid_in(	v_flag		) ,
-	.final_in(	f_flag		) ,
+	.valid_in(	v_flag_ed		) ,
+	.final_in(	f_flag_ed1		) ,
 	//---- kernel ----//
 	.ker_0(		ker_shf[0][63-:8]		) ,
 	.ker_1(		ker_shf[0][55-:8]		) ,
@@ -204,7 +223,7 @@ pe_8e  #(
 	.ker_6(		ker_shf[0][15-:8]		) ,
 	.ker_7(		ker_shf[0][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[0]		) ,
 	.out_sum	(		row_sumshf[0]		)
 
 );
@@ -234,7 +253,7 @@ pe_8e  #(
 	.ker_6(		ker_shf[1][15-:8]		) ,
 	.ker_7(		ker_shf[1][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[1]		) ,
 	.out_sum	(		row_sumshf[1]		)
 
 );
@@ -264,7 +283,7 @@ pe_8e  #(
 	.ker_6(		ker_shf[2][15-:8]		) ,
 	.ker_7(		ker_shf[2][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[2]		) ,
 	.out_sum	(		row_sumshf[2]		)
 
 );
@@ -294,7 +313,7 @@ pe_8e  #(
 	.ker_6(		ker_shf[3][15-:8]		) ,
 	.ker_7(		ker_shf[3][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[3]		) ,
 	.out_sum	(		row_sumshf[3]		)
 
 );
@@ -324,7 +343,7 @@ pe_8e  #(
 	.ker_6(		ker_shf[4][15-:8]		) ,
 	.ker_7(		ker_shf[4][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[4]		) ,
 	.out_sum	(		row_sumshf[4]		)
 
 );
@@ -354,7 +373,7 @@ pe_8e  #(
 	.ker_6(		ker_shf[5][15-:8]		) ,
 	.ker_7(		ker_shf[5][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[5]		) ,
 	.out_sum	(		row_sumshf[5]		)
 
 );
@@ -384,7 +403,7 @@ pe_8e  #(
 	.ker_6(		ker_shf[6][15-:8]		) ,
 	.ker_7(		ker_shf[6][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[6]		) ,
 	.out_sum	(		row_sumshf[6]		)
 
 );
@@ -414,10 +433,15 @@ pe_8e  #(
 	.ker_6(		ker_shf[7][15-:8]		) ,
 	.ker_7(		ker_shf[7][ 7-:8]		) ,
 	//-----------------------------------------//
-	// .valid_out	(				) ,
+	.valid_out	(		q_valid[7]		) ,
 	.out_sum	(		row_sumshf[7]		)
 
 );
+
+
+
+
+
 
 
 
@@ -443,7 +467,10 @@ always@( posedge clk )begin
 	ker_shf[6] <= knn00 [6] ;
 	ker_shf[7] <= knn00 [7] ;
 
-	final_fg_dly1	<= f_flag ;
+	f_flag_ed 		<= f_flag	;
+	f_flag_ed1		<= f_flag_ed ;
+	f_flag_ed2		<= f_flag_ed1 ;
+	final_fg_dly1	<= f_flag_ed1 ;
 	final_fg_dly2	<= final_fg_dly1 ;
 	final_fg_dly3	<= final_fg_dly2 ;
 	final_fg_dly4	<= final_fg_dly3 ;
@@ -451,7 +478,10 @@ always@( posedge clk )begin
 	final_fg_dly6	<= final_fg_dly5 ;
 	final_fg_dly7	<= final_fg_dly6 ;
 
-	valid_fg_dly1	<= v_flag ;
+
+	v_flag_ed	<= v_flag ;
+	v_flag_ed1		<= v_flag_ed ;
+	valid_fg_dly1	<= v_flag_ed ;
 	valid_fg_dly2	<= valid_fg_dly1 ;
 	valid_fg_dly3	<= valid_fg_dly2 ;
 	valid_fg_dly4	<= valid_fg_dly3 ;
@@ -482,100 +512,158 @@ initial begin
 	#(`CYCLE*3);
 	reset = 1;
 	cv_start =0;
-	f_flag =0 ;
-	v_flag = 0 ;
+	
 	#(`CYCLE*5);
 	reset = 0;
 	@(posedge clk); 
 	cv_start =1;
 
 	wait( cv_start_dly1);
-	v_flag = 1 ;	// take 12 address get 1 row data for convolution
-	for ( cpt0=0 ; cpt0<3 ; cpt0=cpt0+1 )begin
-		for( i0=0 ; i0<12 ; i0=i0+1 )begin
-			@(negedge clk); 
-			ann01 = ifmap_sram_0[ i0 + cpt0*66*4 ];
-			// ker_shf[0] = ker_sram_0[ i0 ];
+		// take 12 address get 1 row data for convolution
+	for ( cpt1=0 ; cpt1< LO_STRIDE  ; cpt1=cpt1 + 1 )begin
+		for ( cpt0=0 ; cpt0<3 ; cpt0=cpt0+1 )begin
+			for( i0=0 ; i0<12 ; i0=i0+1 )begin
+				@(negedge clk); 
+				ann01 = ifmap_sram_0[ i0 + cpt0*66*4 + cpt1*4];
+				// ker_shf[0] = ker_sram_0[ i0 ];
 
+			end
+			i0 = 0 ;
+		end
+		
+		cpt0 =0 ;
+
+
+	end
+	cpt1 = 0 ;
+
+	@(posedge clk); 
+	cv_start =0;
+
+
+
+end
+
+always@( * )begin
+	if( cv_start_dly0 )begin
+		// if( i0==11 && cpt0==2 && cpt1==LO_STRIDE-1)begin
+		// 	v_flag =0 ;
+		// end
+		// else begin
+		// 	v_flag =1 ;
+		// end
+		v_flag =1 ;
+	end
+	else begin
+		v_flag =0 ;
+	end
+
+end
+always@( * )begin
+	if( cv_start_dly1 )begin
+		if( cpt0 == 2 && i0 == 11 )begin
+			f_flag =1 ;	
+		end
+		else begin
+			f_flag =0 ;	
 		end
 	end
-	
-	
-	
-	f_flag =1 ;		
-	@(negedge clk) ;
-	v_flag = 0 ;
-	f_flag =0 ;	
-
-
-
-
+	else begin
+		f_flag =0 ;
+	end
 
 end
 
 
 initial begin
 	wait( cv_start_dly0);
-	for( k0=0 ; k0<TE_FIR ; k0=k0+1 )begin
-		@(posedge  clk); 
-		knn00 [0] = ker_sram_0 [k0 ];
+	while( cv_start_dly0 )begin
+		for( k0=0 ; k0<TE_FIR ; k0=k0+1 )begin
+			@(posedge  clk); 
+			knn00 [0] = ker_sram_0 [k0 ];
+		end
+		k0=0 ;
+
 	end
+
 
 end
 initial begin
 
 	wait( cv_start_dly1);
-	for( k1=0 ; k1<TE_FIR ; k1=k1+1 )begin
-		@(posedge clk); 
-		knn00 [1] = ker_sram_1 [k1 ];
+	while( cv_start_dly1 )begin
+		for( k1=0 ; k1<TE_FIR ; k1=k1+1 )begin
+			@(posedge clk); 
+			knn00 [1] = ker_sram_1 [k1 ];
+		end
+		k1=0 ;
 	end
+
 end
 initial begin
 	wait( cv_start_dly2);
+	while( cv_start_dly2 )begin
 		for( k2=0 ; k2<TE_FIR ; k2=k2+1 )begin
 			@(posedge clk); 
 			knn00 [2] = ker_sram_2 [k2 ];
 		end
+	end
+
 
 end
 initial begin
 	wait( cv_start_dly3);
+	while( cv_start_dly3 )begin
 		for( k3=0 ; k3<TE_FIR ; k3=k3+1 )begin
 			@(posedge clk); 
 			knn00 [3] = ker_sram_3 [k3 ];
 		end
+	end
+
 
 end
 initial begin
 	wait( cv_start_dly4);
+	while( cv_start_dly4 )begin
 		for( k4=0 ; k4<TE_FIR ; k4=k4+1 )begin
 			@(posedge clk); 
 			knn00 [4] = ker_sram_0 [k4 ];
 		end
+	end
+
 
 end
 initial begin
 	wait( cv_start_dly5);
+	while( cv_start_dly5 )begin
 		for( k5=0 ; k5<TE_FIR ; k5=k5+1 )begin
 			@(posedge clk); 
 			knn00 [5] = ker_sram_0 [k5 ];
 		end
+	end
+
 
 end
 initial begin
 	wait( cv_start_dly6);
+	while( cv_start_dly6 )begin
 		for( k6=0 ; k6<TE_FIR ; k6=k6+1 )begin
 			@(posedge clk); 
 			knn00 [6] = ker_sram_0 [k6 ];
 		end
+	end
+
 
 end
 initial begin
 	wait( cv_start_dly7);
+	while( cv_start_dly7 )begin
 		for( k7=0 ; k7<TE_FIR ; k7=k7+1 )begin
 			@(posedge clk); 
 			knn00 [7] = ker_sram_0 [k7 ];
 		end
+	end
+
 
 end
 

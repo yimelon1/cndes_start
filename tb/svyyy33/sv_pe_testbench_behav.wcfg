@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="sv_pe_testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="sv_pe_testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="855166666fs"></ZoomStartTime>
+      <ZoomEndTime time="1028966667fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="238"></NameColumnWidth>
+      <ValueColumnWidth column_width="149"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="79" />
+   <wvobject fp_name="/sv_pe_testbench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/act_shf" type="array">
+      <obj_property name="ElementShortName">act_shf[0:7][63:0]</obj_property>
+      <obj_property name="ObjectShortName">act_shf[0:7][63:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/ker_shf" type="array">
+      <obj_property name="ElementShortName">ker_shf[0:7][63:0]</obj_property>
+      <obj_property name="ObjectShortName">ker_shf[0:7][63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/row_sumshf" type="array">
+      <obj_property name="ElementShortName">row_sumshf[0:7][31:0]</obj_property>
+      <obj_property name="ObjectShortName">row_sumshf[0:7][31:0]</obj_property>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[0]" type="array">
+         <obj_property name="ElementShortName">[0][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[1]" type="array">
+         <obj_property name="ElementShortName">[1][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[2]" type="array">
+         <obj_property name="ElementShortName">[2][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[2][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[3]" type="array">
+         <obj_property name="ElementShortName">[3][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[3][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[4]" type="array">
+         <obj_property name="ElementShortName">[4][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[4][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[5]" type="array">
+         <obj_property name="ElementShortName">[5][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[5][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[6]" type="array">
+         <obj_property name="ElementShortName">[6][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[6][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/row_sumshf[7]" type="array">
+         <obj_property name="ElementShortName">[7][31:0]</obj_property>
+         <obj_property name="ObjectShortName">[7][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group115" type="group">
+      <obj_property name="label">svstart</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/sv_pe_testbench/cv_start" type="logic">
+         <obj_property name="ElementShortName">cv_start</obj_property>
+         <obj_property name="ObjectShortName">cv_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly0" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly0</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly1" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly1</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly2" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly2</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly3" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly3</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly3</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly4" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly4</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly4</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly5" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly5</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly5</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly6" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly6</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly6</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/cv_start_dly7" type="logic">
+         <obj_property name="ElementShortName">cv_start_dly7</obj_property>
+         <obj_property name="ObjectShortName">cv_start_dly7</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="group114" type="group">
+      <obj_property name="label">fflag</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/sv_pe_testbench/f_flag" type="logic">
+         <obj_property name="ElementShortName">f_flag</obj_property>
+         <obj_property name="ObjectShortName">f_flag</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/f_flag_ed" type="logic">
+         <obj_property name="ElementShortName">f_flag_ed</obj_property>
+         <obj_property name="ObjectShortName">f_flag_ed</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/f_flag_ed1" type="logic">
+         <obj_property name="ElementShortName">f_flag_ed1</obj_property>
+         <obj_property name="ObjectShortName">f_flag_ed1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/f_flag_ed2" type="logic">
+         <obj_property name="ElementShortName">f_flag_ed2</obj_property>
+         <obj_property name="ObjectShortName">f_flag_ed2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/final_fg_dly1" type="logic">
+         <obj_property name="ElementShortName">final_fg_dly1</obj_property>
+         <obj_property name="ObjectShortName">final_fg_dly1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/final_fg_dly2" type="logic">
+         <obj_property name="ElementShortName">final_fg_dly2</obj_property>
+         <obj_property name="ObjectShortName">final_fg_dly2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/final_fg_dly3" type="logic">
+         <obj_property name="ElementShortName">final_fg_dly3</obj_property>
+         <obj_property name="ObjectShortName">final_fg_dly3</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/final_fg_dly4" type="logic">
+         <obj_property name="ElementShortName">final_fg_dly4</obj_property>
+         <obj_property name="ObjectShortName">final_fg_dly4</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/final_fg_dly5" type="logic">
+         <obj_property name="ElementShortName">final_fg_dly5</obj_property>
+         <obj_property name="ObjectShortName">final_fg_dly5</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/final_fg_dly6" type="logic">
+         <obj_property name="ElementShortName">final_fg_dly6</obj_property>
+         <obj_property name="ObjectShortName">final_fg_dly6</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/final_fg_dly7" type="logic">
+         <obj_property name="ElementShortName">final_fg_dly7</obj_property>
+         <obj_property name="ObjectShortName">final_fg_dly7</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group113" type="group">
+      <obj_property name="label">vflag</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/sv_pe_testbench/v_flag" type="logic">
+         <obj_property name="ElementShortName">v_flag</obj_property>
+         <obj_property name="ObjectShortName">v_flag</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/valid_fg_dly1" type="logic">
+         <obj_property name="ElementShortName">valid_fg_dly1</obj_property>
+         <obj_property name="ObjectShortName">valid_fg_dly1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/valid_fg_dly2" type="logic">
+         <obj_property name="ElementShortName">valid_fg_dly2</obj_property>
+         <obj_property name="ObjectShortName">valid_fg_dly2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/valid_fg_dly3" type="logic">
+         <obj_property name="ElementShortName">valid_fg_dly3</obj_property>
+         <obj_property name="ObjectShortName">valid_fg_dly3</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/valid_fg_dly4" type="logic">
+         <obj_property name="ElementShortName">valid_fg_dly4</obj_property>
+         <obj_property name="ObjectShortName">valid_fg_dly4</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/valid_fg_dly5" type="logic">
+         <obj_property name="ElementShortName">valid_fg_dly5</obj_property>
+         <obj_property name="ObjectShortName">valid_fg_dly5</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/valid_fg_dly6" type="logic">
+         <obj_property name="ElementShortName">valid_fg_dly6</obj_property>
+         <obj_property name="ObjectShortName">valid_fg_dly6</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/valid_fg_dly7" type="logic">
+         <obj_property name="ElementShortName">valid_fg_dly7</obj_property>
+         <obj_property name="ObjectShortName">valid_fg_dly7</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/i1" type="array">
+      <obj_property name="ElementShortName">i1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i1[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cycle" type="array">
+      <obj_property name="ElementShortName">cycle[30:0]</obj_property>
+      <obj_property name="ObjectShortName">cycle[30:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/i0" type="array">
+      <obj_property name="ElementShortName">i0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i0[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cpt0" type="array">
+      <obj_property name="ElementShortName">cpt0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cpt0[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/cpt1" type="array">
+      <obj_property name="ElementShortName">cpt1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cpt1[31:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/f_flag" type="logic">
+      <obj_property name="ElementShortName">f_flag</obj_property>
+      <obj_property name="ObjectShortName">f_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="group210" type="group">
+      <obj_property name="label">ker_index</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/sv_pe_testbench/k0" type="array">
+         <obj_property name="ElementShortName">k0[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k0[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/k1" type="array">
+         <obj_property name="ElementShortName">k1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k1[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/k2" type="array">
+         <obj_property name="ElementShortName">k2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k2[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/k3" type="array">
+         <obj_property name="ElementShortName">k3[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k3[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/k4" type="array">
+         <obj_property name="ElementShortName">k4[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k4[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/k5" type="array">
+         <obj_property name="ElementShortName">k5[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k5[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/k6" type="array">
+         <obj_property name="ElementShortName">k6[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k6[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sv_pe_testbench/k7" type="array">
+         <obj_property name="ElementShortName">k7[31:0]</obj_property>
+         <obj_property name="ObjectShortName">k7[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/v_flag" type="logic">
+      <obj_property name="ElementShortName">v_flag</obj_property>
+      <obj_property name="ObjectShortName">v_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/valid_in" type="logic">
+      <obj_property name="ElementShortName">valid_in</obj_property>
+      <obj_property name="ObjectShortName">valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/final_in" type="logic">
+      <obj_property name="ElementShortName">final_in</obj_property>
+      <obj_property name="ObjectShortName">final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/valid_out" type="logic">
+      <obj_property name="ElementShortName">valid_out</obj_property>
+      <obj_property name="ObjectShortName">valid_out</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/out_sum" type="array">
+      <obj_property name="ElementShortName">out_sum[31:0]</obj_property>
+      <obj_property name="ObjectShortName">out_sum[31:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_final_in" type="logic">
+      <obj_property name="ElementShortName">stage0_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage0_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_final_in" type="logic">
+      <obj_property name="ElementShortName">stage1_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage1_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage2_final_in" type="logic">
+      <obj_property name="ElementShortName">stage2_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage2_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage3_final_in" type="logic">
+      <obj_property name="ElementShortName">stage3_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage3_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage4_final_in" type="logic">
+      <obj_property name="ElementShortName">stage4_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage4_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage5_final_in" type="logic">
+      <obj_property name="ElementShortName">stage5_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage5_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_valid_in" type="logic">
+      <obj_property name="ElementShortName">stage0_valid_in</obj_property>
+      <obj_property name="ObjectShortName">stage0_valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_valid_in" type="logic">
+      <obj_property name="ElementShortName">stage1_valid_in</obj_property>
+      <obj_property name="ObjectShortName">stage1_valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage2_valid_in" type="logic">
+      <obj_property name="ElementShortName">stage2_valid_in</obj_property>
+      <obj_property name="ObjectShortName">stage2_valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage3_valid_in" type="logic">
+      <obj_property name="ElementShortName">stage3_valid_in</obj_property>
+      <obj_property name="ObjectShortName">stage3_valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage4_valid_in" type="logic">
+      <obj_property name="ElementShortName">stage4_valid_in</obj_property>
+      <obj_property name="ObjectShortName">stage4_valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage5_valid_in" type="logic">
+      <obj_property name="ElementShortName">stage5_valid_in</obj_property>
+      <obj_property name="ObjectShortName">stage5_valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_0" type="array">
+      <obj_property name="ElementShortName">stage0_act_0[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_0[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_1" type="array">
+      <obj_property name="ElementShortName">stage0_act_1[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_1[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_2" type="array">
+      <obj_property name="ElementShortName">stage0_act_2[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_2[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_3" type="array">
+      <obj_property name="ElementShortName">stage0_act_3[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_3[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_4" type="array">
+      <obj_property name="ElementShortName">stage0_act_4[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_4[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_5" type="array">
+      <obj_property name="ElementShortName">stage0_act_5[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_5[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_6" type="array">
+      <obj_property name="ElementShortName">stage0_act_6[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_6[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_act_7" type="array">
+      <obj_property name="ElementShortName">stage0_act_7[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_act_7[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_0" type="array">
+      <obj_property name="ElementShortName">stage0_ker_0[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_0[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_1" type="array">
+      <obj_property name="ElementShortName">stage0_ker_1[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_1[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_2" type="array">
+      <obj_property name="ElementShortName">stage0_ker_2[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_2[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_3" type="array">
+      <obj_property name="ElementShortName">stage0_ker_3[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_3[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_4" type="array">
+      <obj_property name="ElementShortName">stage0_ker_4[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_4[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_5" type="array">
+      <obj_property name="ElementShortName">stage0_ker_5[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_5[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_6" type="array">
+      <obj_property name="ElementShortName">stage0_ker_6[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_6[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_ker_7" type="array">
+      <obj_property name="ElementShortName">stage0_ker_7[7:0]</obj_property>
+      <obj_property name="ObjectShortName">stage0_ker_7[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_0" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_0[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_0[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_1" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_1[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_1[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_2" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_2[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_2[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_3" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_3[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_3[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_4" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_4[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_4[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_5" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_5[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_5[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_6" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_6[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_6[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_multsigned_pd_7" type="array">
+      <obj_property name="ElementShortName">stage1_multsigned_pd_7[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage1_multsigned_pd_7[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage0_final_in" type="logic">
+      <obj_property name="ElementShortName">stage0_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage0_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage1_final_in" type="logic">
+      <obj_property name="ElementShortName">stage1_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage1_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage2_final_in" type="logic">
+      <obj_property name="ElementShortName">stage2_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage2_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage3_final_in" type="logic">
+      <obj_property name="ElementShortName">stage3_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage3_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage4_final_in" type="logic">
+      <obj_property name="ElementShortName">stage4_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage4_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage5_final_in" type="logic">
+      <obj_property name="ElementShortName">stage5_final_in</obj_property>
+      <obj_property name="ObjectShortName">stage5_final_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage2_addmult_0" type="array">
+      <obj_property name="ElementShortName">stage2_addmult_0[16:0]</obj_property>
+      <obj_property name="ObjectShortName">stage2_addmult_0[16:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage2_addmult_1" type="array">
+      <obj_property name="ElementShortName">stage2_addmult_1[16:0]</obj_property>
+      <obj_property name="ObjectShortName">stage2_addmult_1[16:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage2_addmult_2" type="array">
+      <obj_property name="ElementShortName">stage2_addmult_2[16:0]</obj_property>
+      <obj_property name="ObjectShortName">stage2_addmult_2[16:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage2_addmult_3" type="array">
+      <obj_property name="ElementShortName">stage2_addmult_3[16:0]</obj_property>
+      <obj_property name="ObjectShortName">stage2_addmult_3[16:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage3_add2_0" type="array">
+      <obj_property name="ElementShortName">stage3_add2_0[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage3_add2_0[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage3_add2_1" type="array">
+      <obj_property name="ElementShortName">stage3_add2_1[17:0]</obj_property>
+      <obj_property name="ObjectShortName">stage3_add2_1[17:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage4_addend_0" type="array">
+      <obj_property name="ElementShortName">stage4_addend_0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">stage4_addend_0[31:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/stage5_acc_0" type="array">
+      <obj_property name="ElementShortName">stage5_acc_0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">stage5_acc_0[31:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/q_valid" type="array">
+      <obj_property name="ElementShortName">q_valid[0:7]</obj_property>
+      <obj_property name="ObjectShortName">q_valid[0:7]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/out_sum" type="array">
+      <obj_property name="ElementShortName">out_sum[31:0]</obj_property>
+      <obj_property name="ObjectShortName">out_sum[31:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p1/out_sum" type="array">
+      <obj_property name="ElementShortName">out_sum[31:0]</obj_property>
+      <obj_property name="ObjectShortName">out_sum[31:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p2/out_sum" type="array">
+      <obj_property name="ElementShortName">out_sum[31:0]</obj_property>
+      <obj_property name="ObjectShortName">out_sum[31:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/ELE_BITS" type="array">
+      <obj_property name="ElementShortName">ELE_BITS[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ELE_BITS[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sv_pe_testbench/r0p0/OUT_BITS" type="array">
+      <obj_property name="ElementShortName">OUT_BITS[31:0]</obj_property>
+      <obj_property name="ObjectShortName">OUT_BITS[31:0]</obj_property>
+   </wvobject>
+</wave_config>

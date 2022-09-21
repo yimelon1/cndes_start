@@ -1,0 +1,130 @@
+//----instance if store cnt start------ 
+//----sramcnt_0---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_00(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_0 ), .cnt_q ( stsr_ct00 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_01(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct01 ), .cnt_q ( stsr_ct01 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_0(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_0 ), .cnt_q ( stsr_addrct_0 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_0 = (  (stsr_cp_0 == dr_num_dly0) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct01 = (	stsr_ct00	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_0 = 'd0 + stsr_ct00 + 32*stsr_ct01 ;		// generate cp number
+//----sramcnt_1---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_10(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_1 ), .cnt_q ( stsr_ct10 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_11(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct11 ), .cnt_q ( stsr_ct11 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_1(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_1 ), .cnt_q ( stsr_addrct_1 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_1 = (  (stsr_cp_1 == dr_num_dly1) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct11 = (	stsr_ct10	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_1 = 'd4 + stsr_ct10 + 32*stsr_ct11 ;		// generate cp number
+//----sramcnt_2---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_20(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_2 ), .cnt_q ( stsr_ct20 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_21(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct21 ), .cnt_q ( stsr_ct21 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_2(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_2 ), .cnt_q ( stsr_addrct_2 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_2 = (  (stsr_cp_2 == dr_num_dly2) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct21 = (	stsr_ct20	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_2 = 'd8 + stsr_ct20 + 32*stsr_ct21 ;		// generate cp number
+//----sramcnt_3---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_30(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_3 ), .cnt_q ( stsr_ct30 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_31(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct31 ), .cnt_q ( stsr_ct31 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_3(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_3 ), .cnt_q ( stsr_addrct_3 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_3 = (  (stsr_cp_3 == dr_num_dly3) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct31 = (	stsr_ct30	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_3 = 'd12 + stsr_ct30 + 32*stsr_ct31 ;		// generate cp number
+//----sramcnt_4---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_40(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_4 ), .cnt_q ( stsr_ct40 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_41(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct41 ), .cnt_q ( stsr_ct41 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_4(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_4 ), .cnt_q ( stsr_addrct_4 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_4 = (  (stsr_cp_4 == dr_num_dly4) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct41 = (	stsr_ct40	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_4 = 'd16 + stsr_ct40 + 32*stsr_ct41 ;		// generate cp number
+//----sramcnt_5---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_50(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_5 ), .cnt_q ( stsr_ct50 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_51(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct51 ), .cnt_q ( stsr_ct51 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_5(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_5 ), .cnt_q ( stsr_addrct_5 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_5 = (  (stsr_cp_5 == dr_num_dly5) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct51 = (	stsr_ct50	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_5 = 'd20 + stsr_ct50 + 32*stsr_ct51 ;		// generate cp number
+//----sramcnt_6---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_60(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_6 ), .cnt_q ( stsr_ct60 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_61(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct61 ), .cnt_q ( stsr_ct61 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_6(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_6 ), .cnt_q ( stsr_addrct_6 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_6 = (  (stsr_cp_6 == dr_num_dly6) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct61 = (	stsr_ct60	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_6 = 'd24 + stsr_ct60 + 32*stsr_ct61 ;		// generate cp number
+//----sramcnt_7---------
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_70(.clk ( clk ), .reset ( reset ), .enable ( en_stsr_addrct_7 ), .cnt_q ( stsr_ct70 ),	
+    .final_number(	'd12	)	// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_CNT_BITS  ) 
+    )cnt_71(.clk ( clk ),.reset ( reset ), .enable ( cten_stsr_ct71 ), .cnt_q ( stsr_ct71 ),	//
+    .final_number(	'd8	)		// it will count to final_num-1 then goes to zero
+);
+count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  ) 
+    )cnt_sraddr_7(.clk ( clk ),.reset ( reset ), .enable ( en_stsr_addrct_7 ), .cnt_q ( stsr_addrct_7 ),	//
+    .final_number(	'd300	)		// it will count to final_num-1 then goes to zero
+);
+assign en_stsr_addrct_7 = (  (stsr_cp_7 == dr_num_dly7) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
+assign cten_stsr_ct71 = (	stsr_ct70	==	6'd11	)? 1'd1 : 1'd0 ;
+assign stsr_cp_7 = 'd28 + stsr_ct70 + 32*stsr_ct71 ;		// generate cp number
+//----instance if store cnt end------ 

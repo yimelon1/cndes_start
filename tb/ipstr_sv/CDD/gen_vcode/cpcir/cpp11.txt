@@ -1,0 +1,66 @@
+//----generate compare circuit by print_ofcmp.py------ 
+//----cp if sram_0---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_0[num_cp] !== gdd_ifsram_0[num_cp])begin
+		$display("sram_0,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_0[num_cp], gdd_ifsram_0[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_0,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_0[num_cp], gdd_ifsram_0[num_cp]);
+	end
+end
+//----cp if sram_1---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_1[num_cp] !== gdd_ifsram_1[num_cp])begin
+		$display("sram_1,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_1[num_cp], gdd_ifsram_1[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_1,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_1[num_cp], gdd_ifsram_1[num_cp]);
+	end
+end
+//----cp if sram_2---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_2[num_cp] !== gdd_ifsram_2[num_cp])begin
+		$display("sram_2,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_2[num_cp], gdd_ifsram_2[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_2,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_2[num_cp], gdd_ifsram_2[num_cp]);
+	end
+end
+//----cp if sram_3---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_3[num_cp] !== gdd_ifsram_3[num_cp])begin
+		$display("sram_3,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_3[num_cp], gdd_ifsram_3[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_3,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_3[num_cp], gdd_ifsram_3[num_cp]);
+	end
+end
+//----cp if sram_4---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_4[num_cp] !== gdd_ifsram_4[num_cp])begin
+		$display("sram_4,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_4[num_cp], gdd_ifsram_4[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_4,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_4[num_cp], gdd_ifsram_4[num_cp]);
+	end
+end
+//----cp if sram_5---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_5[num_cp] !== gdd_ifsram_5[num_cp])begin
+		$display("sram_5,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_5[num_cp], gdd_ifsram_5[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_5,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_5[num_cp], gdd_ifsram_5[num_cp]);
+	end
+end
+//----cp if sram_6---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_6[num_cp] !== gdd_ifsram_6[num_cp])begin
+		$display("sram_6,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_6[num_cp], gdd_ifsram_6[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_6,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_6[num_cp], gdd_ifsram_6[num_cp]);
+	end
+end
+//----cp if sram_7---------
+for(num_cp=0; num_cp<		288	; num_cp=num_cp+1)begin
+	if(tb_ifsram_7[num_cp] !== gdd_ifsram_7[num_cp])begin
+		$display("sram_7,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_7[num_cp], gdd_ifsram_7[num_cp]);
+		error = error + 1;
+		$fwrite(fp_w, "sram_7,error at %d, tbsram= %x  goldsram= %x\n", num_cp, tb_ifsram_7[num_cp], gdd_ifsram_7[num_cp]);
+	end
+end
+//----generate compare circuit end------ 

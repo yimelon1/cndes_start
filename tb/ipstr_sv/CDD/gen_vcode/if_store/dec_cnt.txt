@@ -1,0 +1,66 @@
+//----declare if store cnt start------ 
+//----sramcnt_0---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct00	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct01	;	//second stage cnt
+wire cten_stsr_ct01 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_0		;	// check the data we want
+wire en_stsr_addrct_0 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_0 ;
+//-----------....
+//----sramcnt_1---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct10	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct11	;	//second stage cnt
+wire cten_stsr_ct11 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_1		;	// check the data we want
+wire en_stsr_addrct_1 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_1 ;
+//-----------....
+//----sramcnt_2---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct20	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct21	;	//second stage cnt
+wire cten_stsr_ct21 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_2		;	// check the data we want
+wire en_stsr_addrct_2 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_2 ;
+//-----------....
+//----sramcnt_3---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct30	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct31	;	//second stage cnt
+wire cten_stsr_ct31 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_3		;	// check the data we want
+wire en_stsr_addrct_3 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_3 ;
+//-----------....
+//----sramcnt_4---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct40	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct41	;	//second stage cnt
+wire cten_stsr_ct41 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_4		;	// check the data we want
+wire en_stsr_addrct_4 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_4 ;
+//-----------....
+//----sramcnt_5---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct50	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct51	;	//second stage cnt
+wire cten_stsr_ct51 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_5		;	// check the data we want
+wire en_stsr_addrct_5 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_5 ;
+//-----------....
+//----sramcnt_6---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct60	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct61	;	//second stage cnt
+wire cten_stsr_ct61 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_6		;	// check the data we want
+wire en_stsr_addrct_6 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_6 ;
+//-----------....
+//----sramcnt_7---------
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct70	;	//first stage cnt
+wire [ STSRAM_CNT_BITS-1 :0]	stsr_ct71	;	//second stage cnt
+wire cten_stsr_ct71 ;		//second stage enable
+wire [ IFMAP_SRAM_ADDBITS -1 : 0 ]	stsr_cp_7		;	// check the data we want
+wire en_stsr_addrct_7 ;	
+wire [ IFMAP_SRAM_ADDBITS - 1 :0 ] stsr_addrct_7 ;
+//-----------....
+//----declare if store cnt end------ 
