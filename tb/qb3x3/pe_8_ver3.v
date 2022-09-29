@@ -56,7 +56,6 @@ reg signed [BIAS_BITS-1 : 0] stage5_bias_in ;
 reg signed [BIAS_BITS-1 : 0] stage6_bias_in ;
 reg signed [BIAS_BITS-1 : 0] stage7_bias_in ;
 
-
 reg [ 4-1 : 0] stage0_bias_offset ;
 reg [ 4-1 : 0] stage1_bias_offset ;
 reg [ 4-1 : 0] stage2_bias_offset ;
@@ -150,7 +149,21 @@ reg signed [ OUT_BITS-1  : 0] stage5_acc_0 ;
 //--Declare stage 6--//
 reg signed [ OUT_BITS-1  : 0] stage6_acc_0 ;
 
+//--- act unsigned add reg ----
+reg  [ ELE_BITS : 0] stage1_addact_ru_0	;
+reg  [ ELE_BITS : 0] stage1_addact_ru_1	;
+reg  [ ELE_BITS : 0] stage1_addact_ru_2	;
+reg  [ ELE_BITS : 0] stage1_addact_ru_3	;
 
+reg  [ ELE_BITS+1 : 0] stage2_addact_ru_0	;
+reg  [ ELE_BITS+1 : 0] stage2_addact_ru_1	;
+
+reg  [ ELE_BITS+2 : 0] stage3_addact_ru_0	;
+
+reg  [ 17 : 0] stage4_addact_acc_0 ;
+
+reg  [ 17 : 0] stage5_addact_acc_0 ;
+reg  [ 17 : 0] stage6_addact_acc_0 ;
 
 
 //-- stage 0 ----
@@ -176,9 +189,8 @@ always@( posedge clk )begin
 		stage0_act_6 <= 'd0	;
 		stage0_act_7 <= 'd0	;
 	end
-
-
 end
+
 always@( posedge clk )begin
 
 	if ( stage0_valid_in )begin
@@ -233,6 +245,7 @@ always@( posedge clk )begin
 end
 
 
+
 // tree signed addition with unsigned number activation
 always@(posedge clk )begin
 	if(reset)begin
@@ -243,10 +256,10 @@ always@(posedge clk )begin
 
 	end
 	else begin
-		stage1_addact_ru_0 <= $signed( {1'd0 , stage0_act_0} ) + $signed( {1'd0 , stage0_act_1} )	;
-		stage1_addact_ru_1 <= $signed( {1'd0 , stage0_act_2} ) + $signed( {1'd0 , stage0_act_3} )	;
-		stage1_addact_ru_2 <= $signed( {1'd0 , stage0_act_4} ) + $signed( {1'd0 , stage0_act_5} )	;
-		stage1_addact_ru_3 <= $signed( {1'd0 , stage0_act_6} ) + $signed( {1'd0 , stage0_act_7} )	;
+		stage1_addact_ru_0 <= stage0_act_0 + stage0_act_1	;
+		stage1_addact_ru_1 <= stage0_act_2 + stage0_act_3	;
+		stage1_addact_ru_2 <= stage0_act_4 + stage0_act_5	;
+		stage1_addact_ru_3 <= stage0_act_6 + stage0_act_7	;
 	end
 end
 
@@ -324,10 +337,10 @@ always@(posedge clk )begin
 	else begin
 		if( stage4_valid_in)begin
 			if( !stage4_final_in )begin
-				stage4_addact_acc_0 <= $signed(stage4_addact_acc_0) + $signed(stage3_addact_ru_0) ;
+				stage4_addact_acc_0 <=  stage4_addact_acc_0 +  stage3_addact_ru_0  ;
 			end
 			else begin
-				stage4addact_acc_0 <= $signed(stage3_addact_ru_0) ;
+				stage4_addact_acc_0 <=  stage3_addact_ru_0  ;
 			end
 		end
 		else begin

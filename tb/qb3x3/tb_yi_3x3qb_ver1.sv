@@ -111,6 +111,7 @@ reg [63:0] knn00 [0:7]   ;
 reg [ 63 : 0] act_shf [ 0 : 7 ] ;
 reg [ 63 : 0] ker_shf [ 0 : 7 ] ;
 reg [ 31 : 0] row_sumshf [ 0 : 7 ] ;
+reg [ 31 : 0] act_sum [ 0 : 7 ] ;
 
 
 //  bias buffer 
@@ -213,7 +214,8 @@ wire q_valid [0:7] ;
 
 
 wire pe_seqout_valid ;
-wire signed [ 31 : 0 ] pe_seqout_data ;
+wire signed [ 31 : 0 ] pe_seqout_data ;		// PE serial before quantize out
+wire signed [ 31 : 0 ] pe_seqout_act ;
 
 
 
@@ -246,6 +248,8 @@ initial begin
 	`else 
 	`endif
 end
+
+
 
 initial begin // initial pattern and expected result
 	wait(reset==1);
@@ -282,7 +286,6 @@ end
 
 
 
-
 //----instance pe with bias start------ 
 //----pe row0 col_0---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
@@ -290,56 +293,56 @@ pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	)
 .act_0( act_shf[0][63-:8] ) , .act_1( act_shf[0][55-:8] ) , .act_2( act_shf[0][47-:8] ) , .act_3( act_shf[0][39-:8] ) , .act_4( act_shf[0][31-:8] ) , .act_5( act_shf[0][23-:8] ) , .act_6( act_shf[0][15-:8] ) , .act_7( act_shf[0][ 7-:8] ) , .valid_in( valid_fg_dly0 ) ,.final_in( final_fg_dly0 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[0][63-:8] ) , .ker_1( ker_shf[0][55-:8] ) , .ker_2( ker_shf[0][47-:8] ) , .ker_3( ker_shf[0][39-:8] ) , .ker_4( ker_shf[0][31-:8] ) , .ker_5( ker_shf[0][23-:8] ) , .ker_6( ker_shf[0][15-:8] ) , .ker_7( ker_shf[0][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_0_dly0 ), .bias_offset( bi_offset_0_dly0 ), .valid_out ( q_valid[0] ) ,.out_sum ( row_sumshf[0] ) );
+.bias_in	( bi_con_0_dly0 ), .bias_offset( bi_offset_0_dly0 ), .valid_out ( q_valid[0] ) ,.outmacb_sum ( row_sumshf[0] ) ,.outact_sum ( act_sum[0] ) );
 //----pe row0 col_1---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
 )pe_r0_col_1(.clk ( clk ),  .reset ( reset ), 
 .act_0( act_shf[1][63-:8] ) , .act_1( act_shf[1][55-:8] ) , .act_2( act_shf[1][47-:8] ) , .act_3( act_shf[1][39-:8] ) , .act_4( act_shf[1][31-:8] ) , .act_5( act_shf[1][23-:8] ) , .act_6( act_shf[1][15-:8] ) , .act_7( act_shf[1][ 7-:8] ) , .valid_in( valid_fg_dly1 ) ,.final_in( final_fg_dly1 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[1][63-:8] ) , .ker_1( ker_shf[1][55-:8] ) , .ker_2( ker_shf[1][47-:8] ) , .ker_3( ker_shf[1][39-:8] ) , .ker_4( ker_shf[1][31-:8] ) , .ker_5( ker_shf[1][23-:8] ) , .ker_6( ker_shf[1][15-:8] ) , .ker_7( ker_shf[1][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_1_dly0 ), .bias_offset( bi_offset_1_dly0 ), .valid_out ( q_valid[1] ) ,.out_sum ( row_sumshf[1] ) );
+.bias_in	( bi_con_1_dly0 ), .bias_offset( bi_offset_1_dly0 ), .valid_out ( q_valid[1] ) ,.outmacb_sum ( row_sumshf[1] ) ,.outact_sum ( act_sum[1] ) );
 //----pe row0 col_2---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
 )pe_r0_col_2(.clk ( clk ),  .reset ( reset ), 
 .act_0( act_shf[2][63-:8] ) , .act_1( act_shf[2][55-:8] ) , .act_2( act_shf[2][47-:8] ) , .act_3( act_shf[2][39-:8] ) , .act_4( act_shf[2][31-:8] ) , .act_5( act_shf[2][23-:8] ) , .act_6( act_shf[2][15-:8] ) , .act_7( act_shf[2][ 7-:8] ) , .valid_in( valid_fg_dly2 ) ,.final_in( final_fg_dly2 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[2][63-:8] ) , .ker_1( ker_shf[2][55-:8] ) , .ker_2( ker_shf[2][47-:8] ) , .ker_3( ker_shf[2][39-:8] ) , .ker_4( ker_shf[2][31-:8] ) , .ker_5( ker_shf[2][23-:8] ) , .ker_6( ker_shf[2][15-:8] ) , .ker_7( ker_shf[2][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_2_dly0 ), .bias_offset( bi_offset_2_dly0 ), .valid_out ( q_valid[2] ) ,.out_sum ( row_sumshf[2] ) );
+.bias_in	( bi_con_2_dly0 ), .bias_offset( bi_offset_2_dly0 ), .valid_out ( q_valid[2] ) ,.outmacb_sum ( row_sumshf[2] ) ,.outact_sum ( act_sum[2] ) );
 //----pe row0 col_3---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
 )pe_r0_col_3(.clk ( clk ),  .reset ( reset ), 
 .act_0( act_shf[3][63-:8] ) , .act_1( act_shf[3][55-:8] ) , .act_2( act_shf[3][47-:8] ) , .act_3( act_shf[3][39-:8] ) , .act_4( act_shf[3][31-:8] ) , .act_5( act_shf[3][23-:8] ) , .act_6( act_shf[3][15-:8] ) , .act_7( act_shf[3][ 7-:8] ) , .valid_in( valid_fg_dly3 ) ,.final_in( final_fg_dly3 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[3][63-:8] ) , .ker_1( ker_shf[3][55-:8] ) , .ker_2( ker_shf[3][47-:8] ) , .ker_3( ker_shf[3][39-:8] ) , .ker_4( ker_shf[3][31-:8] ) , .ker_5( ker_shf[3][23-:8] ) , .ker_6( ker_shf[3][15-:8] ) , .ker_7( ker_shf[3][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_3_dly0 ), .bias_offset( bi_offset_3_dly0 ), .valid_out ( q_valid[3] ) ,.out_sum ( row_sumshf[3] ) );
+.bias_in	( bi_con_3_dly0 ), .bias_offset( bi_offset_3_dly0 ), .valid_out ( q_valid[3] ) ,.outmacb_sum ( row_sumshf[3] ) ,.outact_sum ( act_sum[3] ) );
 //----pe row0 col_4---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
 )pe_r0_col_4(.clk ( clk ),  .reset ( reset ), 
 .act_0( act_shf[4][63-:8] ) , .act_1( act_shf[4][55-:8] ) , .act_2( act_shf[4][47-:8] ) , .act_3( act_shf[4][39-:8] ) , .act_4( act_shf[4][31-:8] ) , .act_5( act_shf[4][23-:8] ) , .act_6( act_shf[4][15-:8] ) , .act_7( act_shf[4][ 7-:8] ) , .valid_in( valid_fg_dly4 ) ,.final_in( final_fg_dly4 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[4][63-:8] ) , .ker_1( ker_shf[4][55-:8] ) , .ker_2( ker_shf[4][47-:8] ) , .ker_3( ker_shf[4][39-:8] ) , .ker_4( ker_shf[4][31-:8] ) , .ker_5( ker_shf[4][23-:8] ) , .ker_6( ker_shf[4][15-:8] ) , .ker_7( ker_shf[4][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_4_dly0 ), .bias_offset( bi_offset_4_dly0 ), .valid_out ( q_valid[4] ) ,.out_sum ( row_sumshf[4] ) );
+.bias_in	( bi_con_4_dly0 ), .bias_offset( bi_offset_4_dly0 ), .valid_out ( q_valid[4] ) ,.outmacb_sum ( row_sumshf[4] ) ,.outact_sum ( act_sum[4] ) );
 //----pe row0 col_5---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
 )pe_r0_col_5(.clk ( clk ),  .reset ( reset ), 
 .act_0( act_shf[5][63-:8] ) , .act_1( act_shf[5][55-:8] ) , .act_2( act_shf[5][47-:8] ) , .act_3( act_shf[5][39-:8] ) , .act_4( act_shf[5][31-:8] ) , .act_5( act_shf[5][23-:8] ) , .act_6( act_shf[5][15-:8] ) , .act_7( act_shf[5][ 7-:8] ) , .valid_in( valid_fg_dly5 ) ,.final_in( final_fg_dly5 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[5][63-:8] ) , .ker_1( ker_shf[5][55-:8] ) , .ker_2( ker_shf[5][47-:8] ) , .ker_3( ker_shf[5][39-:8] ) , .ker_4( ker_shf[5][31-:8] ) , .ker_5( ker_shf[5][23-:8] ) , .ker_6( ker_shf[5][15-:8] ) , .ker_7( ker_shf[5][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_5_dly0 ), .bias_offset( bi_offset_5_dly0 ), .valid_out ( q_valid[5] ) ,.out_sum ( row_sumshf[5] ) );
+.bias_in	( bi_con_5_dly0 ), .bias_offset( bi_offset_5_dly0 ), .valid_out ( q_valid[5] ) ,.outmacb_sum ( row_sumshf[5] ) ,.outact_sum ( act_sum[5] ) );
 //----pe row0 col_6---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
 )pe_r0_col_6(.clk ( clk ),  .reset ( reset ), 
 .act_0( act_shf[6][63-:8] ) , .act_1( act_shf[6][55-:8] ) , .act_2( act_shf[6][47-:8] ) , .act_3( act_shf[6][39-:8] ) , .act_4( act_shf[6][31-:8] ) , .act_5( act_shf[6][23-:8] ) , .act_6( act_shf[6][15-:8] ) , .act_7( act_shf[6][ 7-:8] ) , .valid_in( valid_fg_dly6 ) ,.final_in( final_fg_dly6 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[6][63-:8] ) , .ker_1( ker_shf[6][55-:8] ) , .ker_2( ker_shf[6][47-:8] ) , .ker_3( ker_shf[6][39-:8] ) , .ker_4( ker_shf[6][31-:8] ) , .ker_5( ker_shf[6][23-:8] ) , .ker_6( ker_shf[6][15-:8] ) , .ker_7( ker_shf[6][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_6_dly0 ), .bias_offset( bi_offset_6_dly0 ), .valid_out ( q_valid[6] ) ,.out_sum ( row_sumshf[6] ) );
+.bias_in	( bi_con_6_dly0 ), .bias_offset( bi_offset_6_dly0 ), .valid_out ( q_valid[6] ) ,.outmacb_sum ( row_sumshf[6] ) ,.outact_sum ( act_sum[6] ) );
 //----pe row0 col_7---------
 pe_8e  #(    .ELE_BITS(	8 	),     .OUT_BITS(	32	),     .BIAS_BITS(	32	) 
 )pe_r0_col_7(.clk ( clk ),  .reset ( reset ), 
 .act_0( act_shf[7][63-:8] ) , .act_1( act_shf[7][55-:8] ) , .act_2( act_shf[7][47-:8] ) , .act_3( act_shf[7][39-:8] ) , .act_4( act_shf[7][31-:8] ) , .act_5( act_shf[7][23-:8] ) , .act_6( act_shf[7][15-:8] ) , .act_7( act_shf[7][ 7-:8] ) , .valid_in( valid_fg_dly7 ) ,.final_in( final_fg_dly7 ) ,
 //---- kernel ----//
 .ker_0( ker_shf[7][63-:8] ) , .ker_1( ker_shf[7][55-:8] ) , .ker_2( ker_shf[7][47-:8] ) , .ker_3( ker_shf[7][39-:8] ) , .ker_4( ker_shf[7][31-:8] ) , .ker_5( ker_shf[7][23-:8] ) , .ker_6( ker_shf[7][15-:8] ) , .ker_7( ker_shf[7][ 7-:8] ) , //---- bias ----//
-.bias_in	( bi_con_7_dly0 ), .bias_offset( bi_offset_7_dly0 ), .valid_out ( q_valid[7] ) ,.out_sum ( row_sumshf[7] ) );
+.bias_in	( bi_con_7_dly0 ), .bias_offset( bi_offset_7_dly0 ), .valid_out ( q_valid[7] ) ,.outmacb_sum ( row_sumshf[7] ) ,.outact_sum ( act_sum[7] ) );
 //----instance pe with bias end------ 
 
 
@@ -360,9 +363,19 @@ getpe_result #(
 	.pe5_result (	{		q_valid[5]		,row_sumshf[5]}	),
 	.pe6_result (	{		q_valid[6]		,row_sumshf[6]}	),
 	.pe7_result (	{		q_valid[7]		,row_sumshf[7]}	),
+	.pe0_actsum (		act_sum[0]		),
+	.pe1_actsum (		act_sum[1]		),
+	.pe2_actsum (		act_sum[2]		),
+	.pe3_actsum (		act_sum[3]		),
+	.pe4_actsum (		act_sum[4]		),
+	.pe5_actsum (		act_sum[5]		),
+	.pe6_actsum (		act_sum[6]		),
+	.pe7_actsum (		act_sum[7]		),
 	.valid_out 		(	pe_seqout_valid	),
-	.serial_result	(	pe_seqout_data	)
+	.serial_result	(	pe_seqout_data	),
+	.serial_actresult (		pe_seqout_act	)
 );
+
 //-------PE output result serial out module -----------------
 
 

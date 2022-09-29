@@ -10,11 +10,13 @@ need_ident = 0
 if( need_ident ):
 	idnt0 = '    '
 	cline = '\n'
+	fname_idn = 'idn'
 else :
 	idnt0 = ''
 	cline = ''
+	fname_idn = ''
 
-with open("./pe_inst/peinst_idn.v", "w") as fp:
+with open("./pe_inst/peinst_"+fname_idn+".v", "w") as fp:
 
 	fp.write( '//----instance pe with bias start------ \n')
 	for nfsram in range(  8 ):
@@ -58,7 +60,7 @@ with open("./pe_inst/peinst_idn.v", "w") as fp:
 
 		fp.write(".valid_out ( q_valid[{2:d}] ) ,{1:s}".format(idnt0,cline,nfsram))
 		fp.write(".outmacb_sum ( row_sumshf[{2:d}] ) ,{1:s}".format(idnt0,cline,nfsram))
-		fp.write(".outact_sum ( row_sumshf[{2:d}] ) {1:s}".format(idnt0,cline,nfsram))
+		fp.write(".outact_sum ( act_sum[{2:d}] ) {1:s}".format(idnt0,cline,nfsram))
 		fp.write("{0:s});\n".format(idnt0,cline,nfsram))
 
 	fp.write( '//----instance pe with bias end------ \n')	
