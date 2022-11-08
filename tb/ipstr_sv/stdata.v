@@ -61,9 +61,9 @@ module stdata
 input	wire 				clk		;
 input	wire 				reset	;
 input	wire [TBITS-1: 0 ]	fifo_data_din		;
-input	wire [TBYTE-1: 0 ]	fifo_strb_din		;
-input	wire 				fifo_last_din		;
-input	wire 				fifo_user_din		;
+input	wire [TBYTE-1: 0 ]	fifo_strb_din		;	// no use
+input	wire 				fifo_last_din		;	// no use
+input	wire 				fifo_user_din		;	// no use
 input	wire 				fifo_empty_n_din	;
 output	reg 				fifo_read_dout		;
 
