@@ -1,8 +1,9 @@
 // ============================================================================
 // Designer : Yi_Yuan Chen
-// Create   : 2022.10.15
+// Create   : 2022.11.09
 // Ver      : 1.0
-// Func     : sram module
+// Func     : connect the sram and send data to pe
+// 		2022/11/09 : deside sram signal for read or write 
 // ============================================================================
 
 `timescale 1ns/100ps
@@ -10,25 +11,23 @@
 
 // `include "./count_yi_v3.v"
 
-
-module if_store 
-#(
-	parameter TBITS = 64 ,
-	parameter TBYTE = 8
-)(
+module ifsram_rw (
 	clk,
 	reset,
-
 	ifstore_data_din		,
 	ifstore_empty_n_din		,
 	ifstore_read_dout		,
 
 	if_store_done 		,
 	if_store_busy 		,
-	start_if_store				
+	start_if_store		,	
+
+	ifsram0_write ,
+	ifsram1_write 
 
 );
 	
+
 input	wire 				clk		;
 input	wire 				reset	;
 input	wire [TBITS-1: 0 ]	ifstore_data_din		;
@@ -39,20 +38,9 @@ output 	reg 				if_store_done		;	// make the next state change
 output	reg					if_store_busy		;	// when catch start signal make busy signal  "ON"
 input	wire				start_if_store			;	// control from get_ins 
 
+input	wire				ifsram0_write			;	// if sram write signal
+input	wire				ifsram1_write			;	// if sram write signal
 
-localparam IFMAP_SRAM_ADDBITS = 11 ;
-localparam IFMAP_SRAM_DATA_WIDTH = 64;
-
-// one row address 0 to 263 means col0 ~ col65
-localparam STSRAM_CNT_BITS = 6	;
-localparam STSRAM_1ST_BITS = 10	;	// cp first stage bits width
-localparam STSRAM_2ST_BITS = 10	;	// cp first stage bits width
-
-//---- config -----------
-localparam FINAL_DIN_NUM =  264 ;		// final of input data number each row
-localparam FINAL_STR1ST_NUM =	FINAL_DIN_NUM*3	;
-localparam FINAL_STR2ST_NUM =	FINAL_DIN_NUM*3	;
-localparam FINAL_STRADDR_NUM =	FINAL_DIN_NUM*3	;		// 3row data = FINAL_DIN_NUM *3  
 
 
 //---- SRAM_IFMAP --------
@@ -70,6 +58,146 @@ wire [  IFMAP_SRAM_DATA_WIDTH-1   :   0   ]   din_sram_if0b1		;
 
 wire [  IFMAP_SRAM_DATA_WIDTH-1   :   0   ]   dout_sram_if0b0	;
 wire [  IFMAP_SRAM_DATA_WIDTH-1   :   0   ]   dout_sram_if0b1	;
+
+
+wire cen_ifsram ;
+wire wen_ifsram ;
+wire [63:0] data_ifsram;
+wire [10:0] addr_ifsram;
+
+// ============================================================================
+// instance sram
+// ============================================================================
+IF_SRAM if0b0 (
+.Q		(	dout_sram_if0b0		),	// output data
+.CLK		(	clk		),	//
+.CEN		(	cen_if0b0		),	// Chip Enable (active low)
+.WEN		(	wen_if0b0		),	// Write Enable (active low)
+.A		(	addr_sram_if0b0		),	// Addresses (A[0] = LSB)
+.D		(	din_sram_if0b0		),	// Data Inputs (D[0] = LSB)
+.EMA		(	3'b0		)	// Extra Margin Adjustment (EMA[0] = LSB)
+);
+IF_SRAM if0b1 (
+.Q		(	dout_sram_if0b1		),	// output data
+.CLK		(	clk		),	//
+.CEN		(	cen_if0b1		),	// Chip Enable (active low)
+.WEN		(	wen_if0b1		),	// Write Enable (active low)
+.A		(	addr_sram_if0b1		),	// Addresses (A[0] = LSB)
+.D		(	din_sram_if0b1		),	// Data Inputs (D[0] = LSB)
+.EMA		(	3'b0		)	// Extra Margin Adjustment (EMA[0] = LSB)
+);
+
+
+ifsignal_gen  ifsig01 (
+	.TBITS ( 64 ),
+	.TBYTE ( 8  )
+)#(
+	.clk		(	clk	),
+	.reset		(	reset	),
+
+	.ifstore_data_din		(	isif_data_dout		),
+	.ifstore_empty_n_din	(	ds_empty_n			),
+	.ifstore_read_dout		(	ifstore_read_dout	),
+
+	
+	.if_store_done	(	ifstore_done	),
+	.if_store_busy 	(	ifstore_busy	),
+	.start_if_store	(	ifstore_start	),
+
+	.cen_ifsram 		(	cen_ifsram	),
+	.wen_ifsram 		(	wen_ifsram	),
+	.data_ifsram		(	data_ifsram	),
+	.addr_ifsram		(	addr_ifsram	)
+
+);
+
+
+//--------------------------------------------------
+//------	if sram read module instance	--------
+//--------------------------------------------------
+
+
+
+
+
+
+
+
+
+endmodule
+
+
+// ============================================================================
+// Designer : Yi_Yuan Chen
+// Create   : 2022.11.09
+// Ver      : 1.0
+// Func     : just generate if sram signel
+// 		2022.11.09 : move sram to outside 
+// ============================================================================
+
+module ifsignal_gen
+#(
+	parameter TBITS = 64 ,
+	parameter TBYTE = 8
+)(
+	clk,
+	reset,
+
+	ifstore_data_din		,
+	ifstore_empty_n_din		,
+	ifstore_read_dout		,
+
+	if_store_done 		,
+	if_store_busy 		,
+	start_if_store		,	
+
+	cen_ifsram 			,
+	wen_ifsram 			,
+	data_ifsram			,
+	addr_ifsram			
+
+
+
+);
+
+//----------------------------------------------------------------------------
+//---------------		Parameter			------------------------------------------
+//----------------------------------------------------------------------------
+localparam IFMAP_SRAM_ADDBITS = 11 ;
+localparam IFMAP_SRAM_DATA_WIDTH = 64;
+
+// one row address 0 to 263 means col0 ~ col65
+localparam STSRAM_CNT_BITS = 6	;
+localparam STSRAM_1ST_BITS = 10	;	// cp first stage bits width
+localparam STSRAM_2ST_BITS = 10	;	// cp first stage bits width
+
+//---- config -----------
+localparam FINAL_DIN_NUM =  264 ;		// final of input data number each row
+localparam FINAL_STR1ST_NUM =	FINAL_DIN_NUM*3	;
+localparam FINAL_STR2ST_NUM =	FINAL_DIN_NUM*3	;
+localparam FINAL_STRADDR_NUM =	FINAL_DIN_NUM*3	;		// 3row data = FINAL_DIN_NUM *3  
+//----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------
+//---------------		I/O			------------------------------------------
+//----------------------------------------------------------------------------
+input	wire 				clk		;
+input	wire 				reset	;
+input	wire [TBITS-1: 0 ]	ifstore_data_din		;
+input	wire 				ifstore_empty_n_din		;
+output	reg 				ifstore_read_dout		;
+
+output 	reg 				if_store_done		;	// make the next state change
+output	reg					if_store_busy		;	// when catch start signal make busy signal  "ON"
+input	wire				start_if_store			;	// control from get_ins 
+
+output wire cen_ifsram ;
+output wire wen_ifsram ;
+output wire [63:0] data_ifsram;
+output wire [10:0] addr_ifsram;
+
+
+
 
 
 reg nxet_busy ;
@@ -126,28 +254,13 @@ reg [TBITS-1:0] 	dr_data_dly6	;
 reg [TBITS-1:0] 	dr_data_dly7	;
 
 
-// ============================================================================
-// instance sram
-// ============================================================================
-IF_SRAM if0b0 (
-   .Q		(	dout_sram_if0b0		),	// output data
-   .CLK		(	clk		),	//
-   .CEN		(	cen_if0b0		),	// Chip Enable (active low)
-   .WEN		(	wen_if0b0		),	// Write Enable (active low)
-   .A		(	addr_sram_if0b0		),	// Addresses (A[0] = LSB)
-   .D		(	din_sram_if0b0		),	// Data Inputs (D[0] = LSB)
-   .EMA		(	3'b0		)	// Extra Margin Adjustment (EMA[0] = LSB)
-);
-IF_SRAM if0b1 (
-   .Q		(	dout_sram_if0b1		),	// output data
-   .CLK		(	clk		),	//
-   .CEN		(	cen_if0b1		),	// Chip Enable (active low)
-   .WEN		(	wen_if0b1		),	// Write Enable (active low)
-   .A		(	addr_sram_if0b1		),	// Addresses (A[0] = LSB)
-   .D		(	din_sram_if0b1		),	// Data Inputs (D[0] = LSB)
-   .EMA		(	3'b0		)	// Extra Margin Adjustment (EMA[0] = LSB)
-);
 
+
+
+assign addr_ifsram	= stsr_addrct_0		;
+assign data_ifsram	= dr_data_dly0 		;
+assign cen_ifsram		= ~en_stsr_addrct_0	;
+assign wen_ifsram		= ~en_stsr_addrct_0	;
 
 //----sramcnt_0---------
 count_yi_v3 #(    .BITS_OF_END_NUMBER( STSRAM_1ST_BITS  ) 
@@ -163,17 +276,20 @@ count_yi_v3 #(    .BITS_OF_END_NUMBER( IFMAP_SRAM_ADDBITS  )
     .final_number(	FINAL_STRADDR_NUM	)		// it will count to final_num-1 then goes to zero
 );
 
-//-------  sram signel connection ------
-assign addr_sram_if0b0	= stsr_addrct_0		;
-assign din_sram_if0b0	= dr_data_dly0 		;
-assign cen_if0b0		= ~en_stsr_addrct_0	;
-assign wen_if0b0		= ~en_stsr_addrct_0	;
+// //-------  sram signel connection ( sram are moved to outside module ------
+// assign addr_sram_if0b0	= stsr_addrct_0		;
+// assign din_sram_if0b0	= dr_data_dly0 		;
+// assign cen_if0b0		= ~en_stsr_addrct_0	;
+// assign wen_if0b0		= ~en_stsr_addrct_0	;
 
-assign addr_sram_if0b1	= stsr_addrct_0		;
-assign din_sram_if0b1	= dr_data_dly0 		;
-assign cen_if0b1		= ~en_stsr_addrct_0	;
-assign wen_if0b1		= ~en_stsr_addrct_0	;
-//---------------------------------
+// assign addr_sram_if0b1	= stsr_addrct_0		;
+// assign din_sram_if0b1	= dr_data_dly0 		;
+// assign cen_if0b1		= ~en_stsr_addrct_0	;
+// assign wen_if0b1		= ~en_stsr_addrct_0	;
+// //---------------------------------
+
+
+
 
 assign en_stsr_addrct_0 = (  (stsr_cp_0 == dr_num_dly0) && valid_drdata_dly1 )? 1'd1 : 1'd0 ;		// check data we want
 // assign cten_stsr_ct01 = (	stsr_ct00	==	FINAL_1ST_NUM-1	)? 1'd1 : 1'd0 ;	// one IF SRAM no use
