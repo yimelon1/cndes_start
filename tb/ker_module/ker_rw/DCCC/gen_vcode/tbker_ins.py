@@ -18,7 +18,7 @@ else :
 
 
 with open("./sram_ins/tbker_dec"+fname_idn+".v", "w") as fp:
-
+	fp.write( '//----generate by tbker_ins.py \n' )
 	fp.write( '//----tb declare KER_SRAM start------ \n')
 	for nfsram in range(  8 ):
 
@@ -43,7 +43,7 @@ with open("./sram_ins/tbker_dec"+fname_idn+".v", "w") as fp:
 		fp.write("{0:s}input wire tst_cen_kersr_{2:d} ;{1:s}".format(idnt0,cline,nfsram))
 		fp.write("{0:s}input wire tst_wen_kersr_{2:d} ;{1:s}".format(idnt0,cline,nfsram))
 		fp.write("{0:s}input wire [ 11 -1 : 0 ] tst_addr__kersr_{2:d} ;{1:s}".format(idnt0,cline,nfsram))
-		fp.write("{0:s}input wire [ 64 -1 : 0 ] dout_kersr_{2:d} ;{1:s}".format(idnt0,cline,nfsram))
+		fp.write("{0:s}output wire [ 64 -1 : 0 ] dout_kersr_{2:d} ;{1:s}".format(idnt0,cline,nfsram))
 	fp.write( '//----ker w test input declare end------ \n')	
 
 
