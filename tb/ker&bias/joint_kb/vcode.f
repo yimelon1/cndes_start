@@ -1,0 +1,11 @@
+../src/INPUT_STREAM_if.v    
+../src/count_yi_v3.v      
+../src/biassram_r.v
+../src/biassram_w.v
+../src/bias_top.v
+../src/kersram_r.v
+../src/kersram_w.v
+../src/ker_top.v  
+../sram_dir/BI_SRAM/BIAS_SRAM.v    
+../sram_dir/KER_SRAM/KER_SRAM.v    
+../src/tb_kerbias.sv

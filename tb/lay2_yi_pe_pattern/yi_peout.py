@@ -63,7 +63,7 @@ stage5_ar = np.empty([ 1] , dtype = np.int32)
 
 
 adbias = 0
-			
+	
 with open("./PAT/pe_out/peout.dat", "w") as fp:
 	for row in range( 1 ): 
 		for col in range( 8 ):  

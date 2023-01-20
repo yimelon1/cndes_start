@@ -4,6 +4,7 @@
 // Ver      : 1.0
 // Func     : just generate if sram signel
 // 		2022.11.09 : move sram to outside 
+// 		2022.12.06 : modify drdata and drnum
 // ============================================================================
 
 module ifstore_gen
@@ -124,9 +125,6 @@ reg [TBITS-1:0] 	dr_data_dly6	;
 reg [TBITS-1:0] 	dr_data_dly7	;
 
 
-
-
-
 assign addr_ifsram	= stsr_addrct_0		;
 assign data_ifsram	= dr_data_dly0 		;
 assign cen_ifsram		= ~en_stsr_addrct_0	;
@@ -157,26 +155,11 @@ assign stsr_cp_0 = 'd0 + stsr_ct00 + 32*stsr_ct01 ;		// generate cp number
 //-------  input data stream ------
 // shift data and input address for every sram 
 //---------------------------------
-always@( posedge clk )begin
-	if( reset )begin
-		dr_num_dly0 <= 0;
-		dr_data_dly0 <= 0;
-	end
-	else begin
-		if (valid_drdata )begin
-			dr_num_dly0 <= cnt00;
-			dr_data_dly0 <= ifstore_data_din;
-		end
-		else begin
-			dr_num_dly0 <= dr_num_dly0;
-			dr_data_dly0 <= dr_data_dly0;
-		end
-	end
-	
-end
-
 
 always@(posedge clk )begin
+
+	dr_num_dly0 <= cnt00;
+	
 	dr_num_dly1	<= dr_num_dly0	;
 	dr_num_dly2	<= dr_num_dly1	;
 	dr_num_dly3	<= dr_num_dly2	;
@@ -185,6 +168,7 @@ always@(posedge clk )begin
 	dr_num_dly6	<= dr_num_dly5	;
 	dr_num_dly7	<= dr_num_dly6	;
 
+	dr_data_dly0	<= ifstore_data_din	;
 	dr_data_dly1	<= dr_data_dly0		;
 	dr_data_dly2	<= dr_data_dly1		;
 	dr_data_dly3	<= dr_data_dly2		;
