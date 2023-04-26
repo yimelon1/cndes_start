@@ -7,7 +7,9 @@
 
 
 
-module biassram_w (
+module biassram_w #(
+    parameter ADDR_CNT_BITS = 9
+)(
 	clk,
 	reset,
 
@@ -22,9 +24,11 @@ module biassram_w (
 	bias_rd1st_busy 		,
 	bias_rd1st_done 		,
 
+	bias_write_en 			,
 	bias_write_done 		,
 	bias_write_busy 		,
-	start_bias_write		
+	start_bias_write		,
+	cfg_biw_lengthsub1
 	
 );
 
@@ -32,7 +36,7 @@ module biassram_w (
 	parameter BIAS_ST_LENGTH = 64;		// every layer has different bias number
 
 //--------- local parameter --------------------------
-	parameter ADDR_CNT_BITS = 9;	
+	// parameter ADDR_CNT_BITS = 9;	
 	parameter BIAS_SRAM_WLEN = 32;		// Bias sram word length for declare
 //---------------------------------------------------------
 
@@ -52,20 +56,31 @@ module biassram_w (
 	input wire 				bias_rd1st_busy 	;
 	input wire 				bias_rd1st_done 	;
 
+	output wire 			bias_write_en 		;
 	output wire cen_biasr_0 	;
 	output wire wen_biasr_0 	;
 	output wire [ADDR_CNT_BITS -1 : 0	]	addr_biasr_0 	;
 	output wire [	32	 -1 : 0	]	din_biasr_0 	;//----bias SRAM_0---------
 
+	input wire	[ADDR_CNT_BITS-1:0] cfg_biw_lengthsub1	;
 //---------------------------------------------------------
+
+
+
 
 //----    busy and done    ----
 reg [ 1 : 0 ] bd_current_state	;
 reg [ 1 : 0 ] bd_next_state		;
 
-wire en_in_cnt ;
+wire en_ibw_cnt ;
 wire [ADDR_CNT_BITS -1 : 0]cnt_inbias ;
+wire cnt_inbias_last	;
+wire [ADDR_CNT_BITS-1:0] cnt_ib_final	;
+
 wire write_done_flag ;
+
+
+assign bias_write_en = (bd_current_state == 2'd1 ) ? 1'd1 : 1'd0;
 //===================================================================
 //=============			busy and done 		=========================
 //===================================================================
@@ -140,7 +155,7 @@ always @(posedge clk ) begin
 		bias_write_read_dout <= 1'd0 ;
 	end
 	else begin
-		if( bias_write_busy & bias_write_empty_n_din )begin
+		if( bias_write_en & bias_write_empty_n_din )begin
 			bias_write_read_dout <= 1'd1 ;
 		end
 		else begin
@@ -152,19 +167,35 @@ end
 //----- input data number cnt ----------
 
 
-assign en_in_cnt = (bias_write_empty_n_din & bias_write_read_dout ) ?	1'd1 : 1'd0 ;
+assign en_ibw_cnt = (bias_write_empty_n_din & bias_write_read_dout ) ?	1'd1 : 1'd0 ;
 
-count_yi_v3 #(    .BITS_OF_END_NUMBER( ADDR_CNT_BITS  ) 
-    ) wrbias_cnt(.clk ( clk ), .reset ( reset ), .enable ( en_in_cnt ), .cnt_q ( cnt_inbias ),	
-    .final_number(	BIAS_ST_LENGTH	)	// it will count to final_num-1 then goes to zero
+// count_yi_v3 #(    .BITS_OF_END_NUMBER( ADDR_CNT_BITS  ) 
+//     ) wrbias_cnt(.clk ( clk ), .reset ( reset ), .enable ( en_ibw_cnt ), .cnt_q ( cnt_inbias ),	
+//     .final_number(	BIAS_ST_LENGTH	)	// it will count to final_num-1 then goes to zero
+// );
+count_yi_v4 #(
+    .BITS_OF_END_NUMBER (	ADDR_CNT_BITS	)
+)rebias_cnt00(
+    .clk		( clk )
+    ,	.reset 	 		(	reset	)
+    ,	.enable	 		(	en_ibw_cnt	)
+
+	,	.final_number	(	cnt_ib_final	)
+	,	.last			(	cnt_inbias_last		)
+    ,	.total_q		(	cnt_inbias	)
 );
 
-assign cen_biasr_0 	= ~en_in_cnt ;
-assign wen_biasr_0 	= ~en_in_cnt ;
+
+assign cnt_ib_final = cfg_biw_lengthsub1 ;
+
+
+assign cen_biasr_0 	= ~en_ibw_cnt ;
+assign wen_biasr_0 	= ~en_ibw_cnt ;
 assign addr_biasr_0 	= cnt_inbias ;
 assign din_biasr_0 	= bias_write_data_din[31-:32] ;
 
-assign write_done_flag = ( cnt_inbias == BIAS_ST_LENGTH-1 )? 1'd1 : 1'd0 ;
+assign write_done_flag = cnt_inbias_last ;
+// assign write_done_flag = ( cnt_inbias == BIAS_ST_LENGTH-1 )? 1'd1 : 1'd0 ;
 
 
 endmodule

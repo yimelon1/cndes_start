@@ -48,6 +48,7 @@ module ifw_cnt_fsm#(
     clk		
     ,	reset 	 
 	,	din_row_last 			
+	,	din_idle2start 			
 	,	din_ifw_curr_state 		
 	,	din_cfg_mast_state 		
 
@@ -72,9 +73,17 @@ module ifw_cnt_fsm#(
 );
 
 //----    cfg_mast_state label    -----
-localparam  NORMAL 	= 2'd1 ;
-localparam  LEFT 	= 2'd2 ;
-localparam  RIGH 	= 2'd3 ;
+localparam LEFT 	= 3'd1;
+localparam NORMAL 	= 3'd2;
+localparam RIGH 	= 3'd3;
+
+//----    IW FSM for busy done and en signal declare    -----
+localparam IW_IDLE	= 3'd0;
+localparam IW_DLOD	= 3'd1;	// fifo data load state
+localparam IW_WABF	= 3'd2;	// wait buffer 7 write done, and write_en signal should "0"
+localparam IW_RST	= 3'd3;	// reset all counter for next idle
+localparam IW_DONE	= 3'd4;	// done for if_write done signal
+
 
 //----    write buffer fsm parameter declare    -----
 localparam  WRFSM_WIDTH 	= 3 ;
@@ -86,8 +95,10 @@ input	wire reset ;
 
 
 input	wire din_row_last ;
-input	wire [2-1:0]				din_ifw_curr_state ;
-input	wire [2-1:0]				din_cfg_mast_state ;
+input	wire din_idle2start ;
+
+input	wire [3-1:0]				din_ifw_curr_state ;
+input	wire [3-1:0]				din_cfg_mast_state ;
 
 output	wire [WRFSM_WIDTH-1:0]				dout_wr_curr_state ;
 output	wire [CNT00_WIDTH-1:0]		dout_wr_cnt00 ;
@@ -189,8 +200,9 @@ always @(posedge clk ) begin
 end
 always @(*) begin
 	case (wr_current_state)
-		WR_IDLE :	wr_next_state = ( ~(din_ifw_curr_state == 2'd1 ) ) ? WR_IDLE :
-									( din_cfg_mast_state == LEFT ) ? WR_LEFT :WR_NORMAL;
+		// WR_IDLE :	wr_next_state = ( ~(  (din_ifw_curr_state == IW_DLOD)	||	(din_ifw_curr_state == IW_WABF) ) ) ? WR_IDLE :
+		WR_IDLE :	wr_next_state = ( !din_idle2start  ) ? WR_IDLE :
+									( din_cfg_mast_state == LEFT ) ? WR_LEFT :	WR_NORMAL;
 										// ( din_cfg_mast_state == RIGH ) ? WR_NORMAL  : WR_IDLE ;
 
 		WR_LEFT :  	wr_next_state = ( wr_stg0_last ) ? WR_NORMAL : WR_LEFT ;

@@ -18,13 +18,21 @@
 // 			---- (limit)stage1_counter bits => 2 ,4 ,8 it shows how many output column in each buffer. so we need 3 bits for counting each window
 // ============================================================================
 
-`define INS_REPLACE		// replace cnter and fsm
 
 
 module ifsram_w
 #(
-	parameter TBITS = 64 ,
-	parameter TBYTE = 8
+	parameter TBITS = 64 
+	,	parameter TBYTE = 8
+
+	,	parameter IFMAP_SRAM_ADDBITS = 11 			
+	,	parameter IFMAP_SRAM_DATA_WIDTH = 64		
+	,	parameter DATAIN_CNT_BITS = 9				
+
+		// one row address 0 to 263 means col0 ~ col65
+	,	parameter IFWSTG0_CNTBITS = 5					// if write stage0_counter bits width for compare
+	,	parameter IFWSTG1_CNTBITS = 3					// if write stage1_counter bits width for compare
+	
 )(
  	clk			
 	,	reset		
@@ -33,9 +41,10 @@ module ifsram_w
 	,	ifstore_empty_n_din		
 	,	ifstore_read_dout		
 
-	,	if_store_done 			
-	,	if_store_busy 			
-	,	start_if_store			
+	,	if_write_done 			
+	,	if_write_busy 			
+	,	if_write_start			
+	,	if_write_en			
 
 	,	dout_wrb0_cen	
 	,	dout_wrb1_cen	
@@ -73,24 +82,37 @@ module ifsram_w
 	,	dout_wrb6_data	
 	,	dout_wrb7_data	
 
+	//config input setting
+	,	cfg_atlchin
+	,	cfg_conv_switch
+	,	cfg_mast_state
+	,	cfg_pdlf
+	,	cfg_pdrg
+	,	cfg_nor
+	,	cfg_stg0_nor_finum
+	,	cfg_stg0_pdb0_finum
+	,	cfg_stg0_pdb1_finum
+	,	cfg_stg1_eb_col
+	,	cfg_dincnt_finum
+	,	cfg_rowcnt_finum
+
 );
 
 //----------------------------------------------------------------------------
 //---------------		Parameter		--------------------------------------
 //----------------------------------------------------------------------------
-localparam IFMAP_SRAM_ADDBITS = 11 ;
-localparam IFMAP_SRAM_DATA_WIDTH = 64;
-localparam DATAIN_CNT_BITS = 9;
+// localparam IFMAP_SRAM_ADDBITS = 11 ;
+// localparam IFMAP_SRAM_DATA_WIDTH = 64;
+// localparam DATAIN_CNT_BITS = 9;
 
-// one row address 0 to 263 means col0 ~ col65
-localparam IFWSTG0_CNTBITS = 5	;	// if write stage0_counter bits width for compare
-localparam IFWSTG1_CNTBITS = 3	;	// if write stage1_counter bits width for compare
+// // one row address 0 to 263 means col0 ~ col65
+// localparam IFWSTG0_CNTBITS = 5	;	// if write stage0_counter bits width for compare
+// localparam IFWSTG1_CNTBITS = 3	;	// if write stage1_counter bits width for compare
 
 
 //---- config -----------
-localparam FINAL_DIN_NUM =  68 ;		// final of input data number each row 4*66 -> 4*16
+// localparam FINAL_DIN_NUM =  68 ;		// final of input data number each row 4*66 -> 4*16
 
-localparam FINAL_STRADDR_NUM =	FINAL_DIN_NUM*3	;		// 3row data = FINAL_DIN_NUM *3  
 //----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
@@ -102,9 +124,11 @@ input	wire [TBITS-1: 0 ]	ifstore_data_din		;
 input	wire 				ifstore_empty_n_din		;
 output	reg 				ifstore_read_dout		;
 
-output 	reg 				if_store_done		;	// make the next state change
-output	reg					if_store_busy		;	// when catch start signal make busy signal  "ON"
-input	wire				start_if_store			;	// control from get_ins 
+output 	reg 				if_write_done		;	// make the next state change
+output	reg					if_write_busy		;	// when catch start signal make busy signal  "ON"
+output	reg					if_write_en		;	// when catch start signal make busy signal  "ON"
+input	wire				if_write_start			;	// control from get_ins 
+
 
 
 output	wire dout_wrb0_cen , dout_wrb1_cen , dout_wrb2_cen , dout_wrb3_cen , dout_wrb4_cen , dout_wrb5_cen , dout_wrb6_cen , dout_wrb7_cen	;
@@ -115,14 +139,35 @@ output	wire [IFMAP_SRAM_ADDBITS-1 : 0]dout_wrb0_addr , dout_wrb1_addr , dout_wrb
 output	wire [TBITS-1 : 0]dout_wrb0_data , dout_wrb1_data , dout_wrb2_data , dout_wrb3_data 
 							, dout_wrb4_data , dout_wrb5_data , dout_wrb6_data , dout_wrb7_data	;
 
-reg [1:0] current_state ;
-reg [1:0] next_state ;
+//config input setting
+input	wire	[5-1:0]		cfg_atlchin ;
+input	wire	[3-1:0] 	cfg_conv_switch ;
+input	wire	[3-1:0]		cfg_mast_state	;
+input	wire	[6-1:0]		cfg_pdlf	;
+input	wire	[6-1:0]		cfg_pdrg	;
+input	wire	[6-1:0]		cfg_nor		;
+input	wire	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_nor_finum	;
+input	wire	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_pdb0_finum	;
+input	wire	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_pdb1_finum	;
+input	wire	[IFWSTG1_CNTBITS-1 :0]	cfg_stg1_eb_col		;
+input	wire	[DATAIN_CNT_BITS-1 :0]	cfg_dincnt_finum	;
+input	wire	[3-1 :0]	cfg_rowcnt_finum	;
+//
+
+//----    IW FSM for busy done and en signal declare    -----
+localparam IW_IDLE	= 3'd0;
+localparam IW_DLOD	= 3'd1;	// fifo data load state
+localparam IW_WABF	= 3'd2;	// wait buffer 7 write done, and write_en signal should "0"
+localparam IW_RST	= 3'd3;	// reset all counter for next idle
+localparam IW_DONE	= 3'd4;	// done for if_write done signal
+reg [3-1:0] current_state ;
+reg [3-1:0] next_state ;
 // ============================================================================
 //--------		Config master state		-----------
-localparam  NORMAL 	= 2'd1 ;
-localparam  LEFT 	= 2'd2 ;
-localparam  RIGH 	= 2'd3 ;
 
+localparam LEFT 	= 3'd1;
+localparam NORMAL 	= 3'd2;
+localparam RIGH 	= 3'd3;
 //-----------------------------------------------------------------------------
 
 
@@ -159,7 +204,7 @@ reg valid_drdata_dly9 ;
 
 localparam CNT_ROW_BITS = 3 ;
 localparam ROW_CNT_START = 'd0 ;
-localparam ROW_CNT_FINAL = 'd2 ;
+// localparam ROW_CNT_FINAL = 'd2 ;
 wire [CNT_ROW_BITS -1 : 0]	row_count	;
 wire row_last ;
 wire en_row_count ;
@@ -176,19 +221,19 @@ reg		[ DATAIN_CNT_BITS -1 : 0 ] cnt00 ;
 //-----------------------------------------------------------------------------
 
 
-//----   config register declare    -----
-reg		[5-1:0]	cfg_atlchin ;
-reg		[3-1:0] cfg_conv_switch ;
+// //----   config register declare    -----
+// reg		[5-1:0]	cfg_atlchin ;
+// reg		[3-1:0] cfg_conv_switch ;
 
-reg [2-1:0 ]	cfg_mast_state		;
-reg [6-1:0 ]	cfg_pdlf	;
-reg [6-1:0 ]	cfg_pdrg	;
-reg [6-1:0 ]	cfg_nor		;
+// reg [2-1:0 ]	cfg_mast_state		;
+// reg [6-1:0 ]	cfg_pdlf	;
+// reg [6-1:0 ]	cfg_pdrg	;
+// reg [6-1:0 ]	cfg_nor		;
 
-reg	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_nor_finum	;
-reg	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_pdb0_finum	;
-reg	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_pdb1_finum	;
-reg	[IFWSTG1_CNTBITS-1 :0]	cfg_stg1_eb_col		;
+// reg	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_nor_finum	;
+// reg	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_pdb0_finum	;
+// reg	[IFWSTG0_CNTBITS-1 :0]	cfg_stg0_pdb1_finum	;
+// reg	[IFWSTG1_CNTBITS-1 :0]	cfg_stg1_eb_col		;
 
 
 
@@ -310,46 +355,46 @@ wire [8-1:0]	wrb0_pdaddr_shifter	;
 wire wrb_end_check ;
 wire wrb_rst ;
 wire wrcaf_reset ;	// write buffer cnt and wr_fsm reset 
-
-
+wire wrb_ld_done ;
+wire wrb_idle2start	;
 
 //-----------------------------------------------------------------------------
 //----    reset counter and fsm    -----
 //-----------------------------------------------------------------------------
 assign wrcaf_reset = reset | wrb_rst	;
 
-// ============================================================================
-// ========		Config register		 ==========================================
-// ============================================================================
-//----   config register generate     -----
-always @(posedge clk ) begin
-	if(reset)begin
-		cfg_mast_state	<= LEFT 	;	//NORMAL LEFT RIGH 	
-		cfg_pdlf		<= 6'd8 	;
-		cfg_pdrg		<= 6'd8 	;
-		cfg_nor			<= 6'd12 	;
-		cfg_atlchin		<= 5'd4		;	// ch64->8 ch32->4 ... = ch_in/8
-		cfg_conv_switch <= 3'd2		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
+// // ============================================================================
+// // ========		Config register		 ==========================================
+// // ============================================================================
+// //----   config register generate     -----
+// always @(posedge clk ) begin
+// 	if(reset)begin
+// 		cfg_mast_state	<= LEFT 	;	//NORMAL LEFT RIGH 	
+// 		cfg_pdlf		<= 6'd8 	;
+// 		cfg_pdrg		<= 6'd8 	;
+// 		cfg_nor			<= 6'd12 	;
+// 		cfg_atlchin		<= 5'd4		;	// ch64->8 ch32->4 ... = ch_in/8
+// 		cfg_conv_switch <= 3'd2		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
 
-		//(for counter, don'd use subtract)
-		cfg_stg0_nor_finum	<=	5'd11	;	// 3x3 pad=1 needed (for counter, don'd use subtract)
-		cfg_stg0_pdb0_finum	<=	5'd7	;	// 3x3 pad=1 needed, pdb0_finum	= (3-1)*atl_ch_in -1 = 2*4-1 = 7 , 5x5 pd=2 pdb0_finum =(5-2)*atl_ch_in -1,(for counter, don'd use subtract)
-		cfg_stg0_pdb1_finum	<=	5'd7	;	// 5x5 pad=2 needed (for counter, don'd use subtract)
-		cfg_stg1_eb_col		<=	5'd1	;	// how many col for each buffer, every buffer column = run_col -1 (for counter, don'd use subtract)
-	end
-	else begin
-		cfg_mast_state	<= cfg_mast_state	;
-		cfg_pdlf		<= cfg_pdlf			;
-		cfg_pdrg		<= cfg_pdrg			;
-		cfg_nor			<= cfg_nor			;
-		cfg_atlchin		<= cfg_atlchin		;
-		cfg_conv_switch <= cfg_conv_switch	;	
-		cfg_stg0_nor_finum	<=	cfg_stg0_nor_finum	;
-		cfg_stg0_pdb0_finum	<=	cfg_stg0_pdb0_finum	;
-		cfg_stg0_pdb1_finum	<=	cfg_stg0_pdb1_finum	;
-		cfg_stg1_eb_col		<=	cfg_stg1_eb_col		;
-	end
-end
+// 		//(for counter, don'd use subtract)
+// 		cfg_stg0_nor_finum	<=	5'd11	;	// 3x3 pad=1 needed (for counter, don'd use subtract)
+// 		cfg_stg0_pdb0_finum	<=	5'd7	;	// 3x3 pad=1 needed, pdb0_finum	= (3-1)*atl_ch_in -1 = 2*4-1 = 7 , 5x5 pd=2 pdb0_finum =(5-2)*atl_ch_in -1,(for counter, don'd use subtract)
+// 		cfg_stg0_pdb1_finum	<=	5'd7	;	// 5x5 pad=2 needed (for counter, don'd use subtract)
+// 		cfg_stg1_eb_col		<=	5'd1	;	// how many col for each buffer, every buffer column = run_col -1 (for counter, don'd use subtract)
+// 	end
+// 	else begin
+// 		cfg_mast_state		<= cfg_mast_state	;
+// 		cfg_pdlf			<= cfg_pdlf			;
+// 		cfg_pdrg			<= cfg_pdrg			;
+// 		cfg_nor				<= cfg_nor			;
+// 		cfg_atlchin			<= cfg_atlchin		;
+// 		cfg_conv_switch 	<= cfg_conv_switch	;	
+// 		cfg_stg0_nor_finum	<=	cfg_stg0_nor_finum	;
+// 		cfg_stg0_pdb0_finum	<=	cfg_stg0_pdb0_finum	;
+// 		cfg_stg0_pdb1_finum	<=	cfg_stg0_pdb1_finum	;
+// 		cfg_stg1_eb_col		<=	cfg_stg1_eb_col		;
+// 	end
+// end
 
 //-----------------------------------------------------------------------------
 
@@ -368,7 +413,7 @@ count_yi_v4 #(
     ,	.reset 	 		(	wrcaf_reset	)
     ,	.enable	 		(	en_row_count	)
 
-	,	.final_number	(	ROW_CNT_FINAL	)
+	,	.final_number	(	cfg_rowcnt_finum	)
 	,	.last			(	row_last	)
     ,	.total_q		(	row_count	)
 );
@@ -387,6 +432,7 @@ count_yi_v4 #(
 		.clk	(	clk		)
 		,	.reset	(	wrcaf_reset	)
 
+		,	.din_idle2start 	 	(	wrb_idle2start	)	
 		,	.din_ifw_curr_state 	(	current_state	)	
 		,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 		,	.din_row_last 			(	wrb0_row_last	)
@@ -425,6 +471,7 @@ ifw_cnt_fsm	#(
     .clk	(	clk		)
     ,	.reset	(	wrcaf_reset	)
 
+	,	.din_idle2start 	 	(	wrb_idle2start	)	
 	,	.din_ifw_curr_state 	(	current_state	)	
 	,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 	,	.din_row_last 			(	wrb1_row_last	)
@@ -458,6 +505,7 @@ ifw_cnt_fsm	#(
     .clk	(	clk		)
     ,	.reset	(	wrcaf_reset	)
 
+	,	.din_idle2start 	 	(	wrb_idle2start	)	
 	,	.din_ifw_curr_state 	(	current_state	)	
 	,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 	,	.din_row_last 			(	wrb2_row_last	)
@@ -490,6 +538,7 @@ ifw_cnt_fsm	#(
     .clk	(	clk		)
     ,	.reset	(	wrcaf_reset	)
 
+	,	.din_idle2start 	 	(	wrb_idle2start	)	
 	,	.din_ifw_curr_state 	(	current_state	)	
 	,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 	,	.din_row_last 			(	wrb3_row_last	)
@@ -522,7 +571,8 @@ ifw_cnt_fsm	#(
 )	wr_buf_4 (
     .clk	(	clk		)
     ,	.reset	(	wrcaf_reset	)
-
+	
+	,	.din_idle2start 	 	(	wrb_idle2start	)
 	,	.din_ifw_curr_state 	(	current_state	)	
 	,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 	,	.din_row_last 			(	wrb4_row_last	)
@@ -554,7 +604,8 @@ ifw_cnt_fsm	#(
 )	wr_buf_5 (
     .clk	(	clk		)
     ,	.reset	(	wrcaf_reset	)
-
+	
+	,	.din_idle2start 	 	(	wrb_idle2start	)
 	,	.din_ifw_curr_state 	(	current_state	)	
 	,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 	,	.din_row_last 			(	wrb5_row_last	)
@@ -585,7 +636,8 @@ ifw_cnt_fsm	#(
 )	wr_buf_6 (
     .clk	(	clk		)
     ,	.reset	(	wrcaf_reset	)
-
+	
+	,	.din_idle2start 	 	(	wrb_idle2start	)
 	,	.din_ifw_curr_state 	(	current_state	)	
 	,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 	,	.din_row_last 			(	wrb6_row_last	)
@@ -617,7 +669,8 @@ ifw_cnt_fsm	#(
 )	wr_buf_7 (
     .clk	(	clk		)
     ,	.reset	(	wrcaf_reset	)
-
+	
+	,	.din_idle2start 	 	(	wrb_idle2start	)
 	,	.din_ifw_curr_state 	(	current_state	)	
 	,	.din_cfg_mast_state 	(	cfg_mast_state	)	
 	,	.din_row_last 			(	wrb7_row_last	)
@@ -746,7 +799,7 @@ assign wrb7_cnt01_finalnum =	cfg_stg1_eb_col	;
 
 
 //----    align row_last signal for every wrb_module    -----
-assign tst_row_fin_index = ( row_count == ROW_CNT_FINAL ) ? 1'd1 : 1'd0 ;
+assign tst_row_fin_index = ( row_count == cfg_rowcnt_finum ) ? 1'd1 : 1'd0 ;
 
 assign wrb0_row_last	=	tst_row_fin_index		;
 assign wrb1_row_last	=	row_last_dly0	;
@@ -852,12 +905,12 @@ assign b1_padding_parm =	 ( !(cfg_mast_state == LEFT) )? 5'd8 :
 
 
 // ============================================================================
-// ===== busy & done
+// ===== busy & done & write_en =============
 // ============================================================================
 
 always @(posedge clk ) begin
 	if(reset) begin
-		current_state <= 2'd0;
+		current_state <= 3'd0;
 	end
 	else begin
 		current_state <= next_state;
@@ -865,25 +918,28 @@ always @(posedge clk ) begin
 end
 always @(*) begin
 	case (current_state)
-		2'd0: next_state = (start_if_store) ? 2'd1 : 2'd0 ;
-		2'd1: next_state = (wrb_end_check) ? 2'd2 : 2'd1 ;
-		2'd2: next_state = 2'd3 ;	// for reset all counter
-		2'd3: next_state = 2'd0 ;
-		default: next_state = 2'd0 ;
+		IW_IDLE	: next_state = (if_write_start) ? 3'd1 : 3'd0 ;
+		IW_DLOD	: next_state = (wrb_ld_done) ? IW_WABF : IW_DLOD ;
+		IW_WABF	: next_state = (wrb_end_check) ? IW_RST : IW_WABF ;
+		IW_RST	: next_state = IW_DONE ;
+		IW_DONE	: next_state = IW_IDLE ;
+		default: next_state = IW_IDLE ;
 	endcase	
 end
 
 
 always @( * ) begin
-	if_store_busy =	( (current_state == 2'd1)	||	(current_state == 2'd2) ||(current_state == 2'd3)	) ? 1'd1 : 1'd0 ;
-	if_store_done =	(current_state == 2'd3) ? 1'd1 : 1'd0  ;		// need fix 
+	if_write_busy =	( (current_state == IW_DLOD)	||	(current_state == IW_WABF) ||(current_state == IW_RST)	||(current_state == IW_DONE)) ? 1'd1 : 1'd0 ;
+	if_write_done =	(current_state == IW_DONE) ? 1'd1 : 1'd0  ;		// need fix 
+	if_write_en	=	(current_state == IW_DLOD) ? 1'd1 : 1'd0 ;
 end
 
-
-
+assign	wrb_ld_done = row_last	;
 assign 	wrb_end_check 	= ( wrb7_current_state == WR_DONE ) ? 1'd1 : 1'd0 ;	// check the latest wr_buf module on DONE state= 3'd4 
-assign 	wrb_rst 		= ( current_state == 2'd2 ) ? 1'd1 : 1'd0 ;	// reset all wr_buf's counter and wr_fsm
+assign 	wrb_rst 		= ( current_state == IW_RST ) ? 1'd1 : 1'd0 ;	// reset all wr_buf's counter and wr_fsm
 
+
+assign wrb_idle2start = (  ( current_state == IW_DLOD) || (current_state == IW_WABF ) )? 1'd1 : 1'd0 ;
 
 // ============================================================================
 // ===== generate valid in 
@@ -895,7 +951,7 @@ always @(posedge clk ) begin
 		ifstore_read_dout <= 1'd0;
 	end		
 	else begin
-		if( if_store_busy ) begin
+		if( if_write_busy ) begin
 			if( ifstore_empty_n_din == 1'd1 )begin
 				ifstore_read_dout <= 1'd1;
 			end
@@ -951,13 +1007,18 @@ always@(posedge clk )begin
 
 end
 
+
+//==============================================================================
+//========    counter for din data    ========
+//==============================================================================
+
 always @(posedge clk ) begin
 	if( reset )begin
 		cnt00 <= 0;
 	end
 	else begin
 		if ( valid_drdata )begin
-			if( cnt00 >= FINAL_DIN_NUM-1 ) cnt00 <= 'd0;
+			if( cnt00 >= cfg_dincnt_finum ) cnt00 <= 'd0;
 			else cnt00 <= cnt00 +1 ;
 		end
 		else begin
@@ -967,7 +1028,7 @@ always @(posedge clk ) begin
 end
 
 
-assign en_row_count = ( (  align_din_index >= FINAL_DIN_NUM-1 )   ) ? 1'd1 : 1'd0 ;
+assign en_row_count = ( (  align_din_index >= cfg_dincnt_finum )   ) ? 1'd1 : 1'd0 ;
 
 // ============================================================================
 

@@ -3,8 +3,8 @@
 // Create   : 2023.02.20
 // Ver      : 1.0
 // Func     : just generate if sram signel
+//				2nd stage padding control FSM : flow1 padding buf0,7 , flow2 padding 1,6
 // 		2023.02.20 : Cause pad<=2 , so only write buffer 0,1,6,7.
-
 // ============================================================================
 
 //==============================================================================
@@ -22,15 +22,13 @@
 // );
 //==============================================================================
 
-
-
-
-
 //----    define for testing    -----
 // `define LEFT_3CP
 // `define LEFT_5CP
-`define RIGH_3CP
+// `define RIGH_3CP
 // `define RIGH_5CP
+
+
 
 module ifsram_pd #(
 	parameter TBITS = 64 
@@ -59,6 +57,18 @@ module ifsram_pd #(
 	,	pdb7_addr	
 	,	pd_data	
 
+	//config input setting
+	,	cfg_atlchin
+	,	cfg_conv_switch
+	,	cfg_mast_state
+	,	cfg_pd_list_0
+	,	cfg_pd_list_1
+	,	cfg_pd_list_2
+	,	cfg_pd_list_3
+	,	cfg_pd_list_4
+	,	cfg_cnt_step_p1
+	,	cfg_cnt_step_p2
+
 
 );
 //----    bit width parameter    -----
@@ -78,30 +88,59 @@ output	reg					if_pad_done 	;
 output	reg					if_pad_busy 	;
 input	wire				if_pad_start	;
 
+output	wire	pdb0_cen ;
+output	wire	pdb1_cen ;
+output	wire	pdb6_cen ;
+output	wire	pdb7_cen ;
+
+output	wire	pdb0_wen ;
+output	wire	pdb1_wen ;
+output	wire	pdb6_wen ;
+output	wire	pdb7_wen ;
+
+output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb0_addr ;
+output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb1_addr ;
+output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb6_addr ;
+output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb7_addr ;
+
+output	wire	[TBITS-1:0] pd_data ;
+
+//config input setting
+input	wire		[5-1:0]	cfg_atlchin 		;
+input	wire		[3-1:0] cfg_conv_switch 	;
+input	wire		[3-1:0]	cfg_mast_state		;	
+input	wire		[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_0		;
+input	wire		[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_1		;
+input	wire		[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_2		;
+input	wire		[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_3		;
+input	wire		[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_4		;	
+input	wire 		[CNTSTP_WIDTH-1:0] cfg_cnt_step_p1 ;
+input	wire 		[CNTSTP_WIDTH-1:0] cfg_cnt_step_p2 ;
+//
 
 //-----------------------------------------------------------------------------
 
 //----   config register declare     -----
-reg	[5-1:0]	cfg_atlchin 		;
-reg	[3-1:0] cfg_conv_switch 	;
-reg	[2-1:0]	cfg_mast_state		;
+// reg	[5-1:0]	cfg_atlchin 		;
+// reg	[3-1:0] cfg_conv_switch 	;
+// reg	[2-1:0]	cfg_mast_state		;
 
-reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_0		;
-reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_1		;
-reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_2		;
-reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_3		;
-reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_4		;
+// reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_0		;
+// reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_1		;
+// reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_2		;
+// reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_3		;
+// reg	[IFMAP_SRAM_ADDBITS-1:0]	cfg_pd_list_4		;
 
-reg [CNTSTP_WIDTH-1:0] cfg_cnt_step_p1 ;
-reg [CNTSTP_WIDTH-1:0] cfg_cnt_step_p2 ;
+// reg [CNTSTP_WIDTH-1:0] cfg_cnt_step_p1 ;
+// reg [CNTSTP_WIDTH-1:0] cfg_cnt_step_p2 ;
 //-----------------------------------------------------------------------------
 //--------		Config master state		-----------
-localparam  NORMAL 	= 2'd1 ;
-localparam  LEFT 	= 2'd2 ;
-localparam  RIGH 	= 2'd3 ;
+localparam LEFT 	= 3'd1;
+localparam NORMAL 	= 3'd2;
+localparam RIGH 	= 3'd3;
+localparam FSLD 	= 3'd7;	// First load sram0
 
 //----    padding fsm    -----
-
 localparam PD_IDLE = 2'd0 ;
 localparam PD_LEFT = 2'd1 ;
 localparam PD_RIGH = 2'd2 ;
@@ -120,25 +159,7 @@ localparam P2_DR 	= 2'd3;	// counter done and reset
 
 //-----------------------------------------------------------------------------
 
-//----    SRAM signal generate    -----
-output	wire	pdb0_cen ;
-output	wire	pdb1_cen ;
-output	wire	pdb6_cen ;
-output	wire	pdb7_cen ;
-
-output	wire	pdb0_wen ;
-output	wire	pdb1_wen ;
-output	wire	pdb6_wen ;
-output	wire	pdb7_wen ;
-
-output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb0_addr ;
-output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb1_addr ;
-output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb6_addr ;
-output	wire	[IFMAP_SRAM_ADDBITS-1:0] pdb7_addr ;
-
-
-output	wire	[TBITS-1:0] pd_data ;
-
+//----    SRAM signal    -----
 wire	[IFMAP_SRAM_ADDBITS-1:0] sram_addr ;
 reg		[IFMAP_SRAM_ADDBITS-1:0] pd_row_shifter;
 reg [5-1:0] atl_ch_shift ;
@@ -164,96 +185,96 @@ wire pd_end_check ;
 wire pd2_flow_done ;
 
 
-//-----------------------------------------------------------------------------
+// //-----------------------------------------------------------------------------
 
 
-`ifdef LEFT_3CP
-	localparam PD_LIST_0 = 9'd0		;
-	localparam PD_LIST_1 = 9'd12	;
-	localparam PD_LIST_2 = 9'd24	;
-	localparam PD_LIST_3 = 9'd0		;
-	localparam PD_LIST_4 = 9'd0		;
-`elsif LEFT_5CP
-	localparam PD_LIST_0 = 9'd0		;
-	localparam PD_LIST_1 = 9'd20	;
-	localparam PD_LIST_2 = 9'd40	;
-	localparam PD_LIST_3 = 9'd60		;
-	localparam PD_LIST_4 = 9'd80		;
-`elsif RIGH_3CP
-	localparam PD_LIST_0 = 9'd44	;
-	localparam PD_LIST_1 = 9'd56	;
-	localparam PD_LIST_2 = 9'd68	;
-	localparam PD_LIST_3 = 9'd0		;
-	localparam PD_LIST_4 = 9'd0		;
-`elsif RIGH_5CP
-	localparam PD_LIST_0 = 9'd112		;
-	localparam PD_LIST_1 = 9'd132		;
-	localparam PD_LIST_2 = 9'd152		;
-	localparam PD_LIST_3 = 9'd172		;
-	localparam PD_LIST_4 = 9'd192		;
-`endif 
-// ============================================================================
-// ========		Config register		 ==========================================
-// ============================================================================
-//----   config register generate     -----
-always @(posedge clk ) begin
-	if(reset)begin
-		cfg_atlchin		<= 5'd4		;	// ch64->8 ch32->4 ... = ch_in/8
-		//----    padding list for shifting    -----
-		cfg_pd_list_0	<= PD_LIST_0	;	// use c_code compute
-		cfg_pd_list_1	<= PD_LIST_1	;	// use c_code compute
-		cfg_pd_list_2	<= PD_LIST_2	;	// use c_code compute
-		cfg_pd_list_3	<= PD_LIST_3	;	// use c_code compute
-		cfg_pd_list_4	<= PD_LIST_4	;	// use c_code compute
-		cfg_cnt_step_p1	<= 3'd7	;		// 3x3 = 3'd3 , 5x5 = 3'd7 
-		cfg_cnt_step_p2	<= 3'd3	;		// 3x3 = 3'd0 , 5x5 = 3'd3 
-		// cfg_cnt_row		<= 3'd4	;	// 3x3 = 3'd2 , 5x5 = 3'd4 
-	end
-	else begin
-		cfg_atlchin		<= cfg_atlchin		;
-		//----    padding list for shifting which reference LEFT RIGHT    -----
-		cfg_pd_list_0	<= PD_LIST_0	;
-		cfg_pd_list_1	<= PD_LIST_1	;
-		cfg_pd_list_2	<= PD_LIST_2	;
-		cfg_pd_list_3	<= PD_LIST_3	;
-		cfg_pd_list_4	<= PD_LIST_4	;
-		cfg_cnt_step_p1	<= cfg_cnt_step_p1	;
-		cfg_cnt_step_p2	<= cfg_cnt_step_p2	;
-		// cfg_cnt_row		<= cfg_cnt_row	;
-	end
-end
-always @(posedge clk ) begin
-	if(reset)begin
-		`ifdef LEFT_3CP
-			cfg_cnt_step_p1	<= 3'd3	;		// atl_ch_in*1 -1 =3
-			cfg_cnt_step_p2	<= 3'd0	;		
-			cfg_mast_state	<= LEFT 	;	//NORMAL LEFT RIGH 	
-			cfg_conv_switch <= 3'd2		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
-		`elsif LEFT_5CP
-			cfg_cnt_step_p1	<= 3'd7	;		// atl_ch_in*2 -1 =7
-			cfg_cnt_step_p2	<= 3'd3	;		// atl_ch_in -1	=3
-			cfg_mast_state	<= LEFT 	;	//NORMAL LEFT RIGH 	
-			cfg_conv_switch <= 3'd3		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
-		`elsif RIGH_3CP
-			cfg_cnt_step_p1	<= 3'd3	;		
-			cfg_cnt_step_p2	<= 3'd0	;		
-			cfg_mast_state	<= RIGH 	;	//NORMAL LEFT RIGH 	
-			cfg_conv_switch <= 3'd2		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
-		`elsif RIGH_5CP
-			cfg_cnt_step_p1	<= 3'd7	;		
-			cfg_cnt_step_p2	<= 3'd3	;	
-			cfg_mast_state	<= RIGH 	;	//NORMAL LEFT RIGH 	
-			cfg_conv_switch <= 3'd3		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
-		`endif 
+// `ifdef LEFT_3CP
+// 	localparam PD_LIST_0 = 9'd0		;
+// 	localparam PD_LIST_1 = 9'd24	;
+// 	localparam PD_LIST_2 = 9'd48	;
+// 	localparam PD_LIST_3 = 9'd0		;
+// 	localparam PD_LIST_4 = 9'd0		;
+// `elsif LEFT_5CP
+// 	localparam PD_LIST_0 = 9'd0		;
+// 	localparam PD_LIST_1 = 9'd20	;
+// 	localparam PD_LIST_2 = 9'd40	;
+// 	localparam PD_LIST_3 = 9'd60		;
+// 	localparam PD_LIST_4 = 9'd80		;
+// `elsif RIGH_3CP
+// 	localparam PD_LIST_0 = 9'd44	;
+// 	localparam PD_LIST_1 = 9'd56	;
+// 	localparam PD_LIST_2 = 9'd68	;
+// 	localparam PD_LIST_3 = 9'd0		;
+// 	localparam PD_LIST_4 = 9'd0		;
+// `elsif RIGH_5CP
+// 	localparam PD_LIST_0 = 9'd112		;
+// 	localparam PD_LIST_1 = 9'd132		;
+// 	localparam PD_LIST_2 = 9'd152		;
+// 	localparam PD_LIST_3 = 9'd172		;
+// 	localparam PD_LIST_4 = 9'd192		;
+// `endif 
+// // ============================================================================
+// // ========		Config register		 ==========================================
+// // ============================================================================
+// //----   config register generate     -----
+// always @(posedge clk ) begin
+// 	if(reset)begin
+// 		cfg_atlchin		<= 5'd4		;	// ch64->8 ch32->4 ... = ch_in/8
+// 		//----    padding list for shifting    -----
+// 		cfg_pd_list_0	<= PD_LIST_0	;	// use c_code compute
+// 		cfg_pd_list_1	<= PD_LIST_1	;	// use c_code compute
+// 		cfg_pd_list_2	<= PD_LIST_2	;	// use c_code compute
+// 		cfg_pd_list_3	<= PD_LIST_3	;	// use c_code compute
+// 		cfg_pd_list_4	<= PD_LIST_4	;	// use c_code compute
+// 		cfg_cnt_step_p1	<= 3'd7	;		// 3x3 = 3'd3 , 5x5 = 3'd7 
+// 		cfg_cnt_step_p2	<= 3'd3	;		// 3x3 = 3'd0 , 5x5 = 3'd3 
+// 		// cfg_cnt_row		<= 3'd4	;	// 3x3 = 3'd2 , 5x5 = 3'd4 
+// 	end
+// 	else begin
+// 		cfg_atlchin		<= cfg_atlchin		;
+// 		//----    padding list for shifting which reference LEFT RIGHT    -----
+// 		cfg_pd_list_0	<= PD_LIST_0	;
+// 		cfg_pd_list_1	<= PD_LIST_1	;
+// 		cfg_pd_list_2	<= PD_LIST_2	;
+// 		cfg_pd_list_3	<= PD_LIST_3	;
+// 		cfg_pd_list_4	<= PD_LIST_4	;
+// 		cfg_cnt_step_p1	<= cfg_cnt_step_p1	;
+// 		cfg_cnt_step_p2	<= cfg_cnt_step_p2	;
+// 		// cfg_cnt_row		<= cfg_cnt_row	;
+// 	end
+// end
+// always @(posedge clk ) begin
+// 	if(reset)begin
+// 		`ifdef LEFT_3CP
+// 			cfg_cnt_step_p1	<= 3'd3	;		// atl_ch_in*1 -1 =3
+// 			cfg_cnt_step_p2	<= 3'd0	;		
+// 			cfg_mast_state	<= LEFT 	;	//NORMAL LEFT RIGH 	
+// 			cfg_conv_switch <= 3'd2		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
+// 		`elsif LEFT_5CP
+// 			cfg_cnt_step_p1	<= 3'd7	;		// atl_ch_in*2 -1 =7
+// 			cfg_cnt_step_p2	<= 3'd3	;		// atl_ch_in -1	=3
+// 			cfg_mast_state	<= LEFT 	;	//NORMAL LEFT RIGH 	
+// 			cfg_conv_switch <= 3'd3		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
+// 		`elsif RIGH_3CP
+// 			cfg_cnt_step_p1	<= 3'd3	;		
+// 			cfg_cnt_step_p2	<= 3'd0	;		
+// 			cfg_mast_state	<= RIGH 	;	//NORMAL LEFT RIGH 	
+// 			cfg_conv_switch <= 3'd2		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
+// 		`elsif RIGH_5CP
+// 			cfg_cnt_step_p1	<= 3'd7	;		
+// 			cfg_cnt_step_p2	<= 3'd3	;	
+// 			cfg_mast_state	<= RIGH 	;	//NORMAL LEFT RIGH 	
+// 			cfg_conv_switch <= 3'd3		;	// 3x3 = 3'd2 , 5x5 = 3'd3 
+// 		`endif 
 
-	end
-	else begin
-		cfg_cnt_step_p1	<= cfg_cnt_step_p1	;
-		cfg_cnt_step_p2	<= cfg_cnt_step_p2	;
-		cfg_mast_state	<= cfg_mast_state	;	//NORMAL LEFT RIGH 	
-		cfg_conv_switch <= cfg_conv_switch 	;	// 3x3 = 3'd2 , 5x5 = 3'd3 
-	end
-end
+// 	end
+// 	else begin
+// 		cfg_cnt_step_p1	<= cfg_cnt_step_p1	;
+// 		cfg_cnt_step_p2	<= cfg_cnt_step_p2	;
+// 		cfg_mast_state	<= cfg_mast_state	;	//NORMAL LEFT RIGH 	
+// 		cfg_conv_switch <= cfg_conv_switch 	;	// 3x3 = 3'd2 , 5x5 = 3'd3 
+// 	end
+// end
 
 wire [CNTSTP_WIDTH-1:0] cnts00_finnum ;
 wire [CNTSTP_WIDTH-1:0] pd2_cnt_step ;
@@ -299,8 +320,9 @@ end
 
 assign pd_end_check = ( pd_current_state == PD_DONE) ? 1'd1 : 1'd0 ;
 //-----------------------------------------------------------------------------
-
-//----    left right padding control FSM    -----
+//==============================================================================
+//========    left right padding control FSM    ========
+//==============================================================================
 always @(posedge clk ) begin
 	if( reset ) pd_current_state <= PD_IDLE ;
 	else pd_current_state <= pd_next_state ;
@@ -309,6 +331,7 @@ always @(*) begin
 	case (pd_current_state)
 		PD_IDLE :	pd_next_state = ( !(current_state == 2'd1 ) ) ? PD_IDLE :
 										( cfg_mast_state == LEFT ) ? PD_LEFT :	
+										( cfg_mast_state == FSLD ) ? PD_LEFT :	
 											( cfg_mast_state == RIGH ) ? PD_RIGH :	PD_IDLE	;	// if pd_current_state hold IDLE. it fucked up.
 		PD_LEFT :	pd_next_state = (pd2_flow_done)? PD_DONE : PD_LEFT ;
 		PD_RIGH :	pd_next_state = (pd2_flow_done)? PD_DONE : PD_RIGH ;
@@ -320,7 +343,9 @@ end
 
 assign pd2_flow_done = ( pd2_current_state == P2_DR) ? 1'd1 : 1'd0 ;
 
-
+//==============================================================================
+//========    2nd stage padding control FSM    ========
+//==============================================================================
 //----    pd2 padding flow control FSM    -----
 always @(posedge clk ) begin
 	if(reset) pd2_current_state <= PD_IDLE ;

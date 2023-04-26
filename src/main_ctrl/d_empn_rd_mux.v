@@ -10,8 +10,6 @@
 
 module d_empn_rd_mux (	
 
-
-
 		if_write_empty_n	// input feature write module empty_n signal
 	,	ker_write_empty_n	// kernel write module empty_n signal
 	,	bias_write_empty_n	// bias write module empty_n signal
@@ -24,9 +22,10 @@ module d_empn_rd_mux (
 
 	,	fsld_current_state	
 	,	mast_current_state	
-	,	if_write_busy		
+	,	if_write_enable			
 	,	ker_write_busy		
-	,	bias_write_busy		
+	,	ker_write_en		
+	,	bias_write_enable		
 
 );
 
@@ -59,9 +58,10 @@ localparam FS_IF 	= 3'd3;
 //----testing I/O -----
 	input wire	[ MAST_FSM_BITS-1 :0]	fsld_current_state			;
 	input wire	[ MAST_FSM_BITS-1 :0]	mast_current_state			;
-	input wire	if_write_busy			;
+	input wire	if_write_enable			;
 	input wire	ker_write_busy			;
-	input wire	bias_write_busy			;
+	input wire	ker_write_en			;
+	input wire	bias_write_enable			;
 //-----------------------------------------------------------------------------
 
 
@@ -71,19 +71,19 @@ localparam FS_IF 	= 3'd3;
 //-----------------------------------------------------------------------------
 
 //----testing busy mux not fsld current state -----
-assign	ker_write_empty_n 	= ( mast_current_state !== FSLD )?		1'd0 : 
-								// ( fsld_current_state == FS_KER )?	empty_n_from_gi : 1'd0 ;
-								( ker_write_busy )?	empty_n_from_gi : 1'd0 ;
+assign	ker_write_empty_n 	= ( mast_current_state != FSLD )?		1'd0 : 
+								// ( ker_write_busy )?	empty_n_from_gi : 1'd0 ;
+								( ker_write_en )?	empty_n_from_gi : 1'd0 ;
 
-assign	bias_write_empty_n 		= ( mast_current_state !== FSLD )?		1'd0 : 
+assign	bias_write_empty_n 		= ( mast_current_state != FSLD )?		1'd0 : 
 								// ( fsld_current_state == FS_BIAS )?	empty_n_from_gi : 1'd0 ;
-								( bias_write_busy )?	empty_n_from_gi : 1'd0 ;
+								( bias_write_enable )?	empty_n_from_gi : 1'd0 ;
 //-----------------------------------------------------------------------------
 
 always @(*) begin
 	case (mast_current_state)
 		M_IDLE :	if_write_empty_n = 1'd0 ;
-		LEFT :		if_write_empty_n = empty_n_from_gi ;
+		LEFT,BASE,RIGHT :		if_write_empty_n = (if_write_enable)? empty_n_from_gi : 1'd0 ;
 		default: if_write_empty_n = 1'd0 ;
 	endcase
 end
@@ -96,11 +96,12 @@ end
 always @(*) begin
 	case (mast_current_state)
 		M_IDLE :	read_for_gi = 1'd0 ;
-		LEFT :		read_for_gi = if_write_read ;
+		LEFT,BASE,RIGHT :		read_for_gi = (if_write_enable)? if_write_read : 1'd0 ;
 
 		FSLD :	begin
-			if( ker_write_busy ) read_for_gi = ker_write_read ;
-			else if ( bias_write_busy ) read_for_gi = bias_write_read ;
+			// if( ker_write_busy ) read_for_gi = ker_write_read ;
+			if( ker_write_en ) read_for_gi = ker_write_read ;
+			else if ( bias_write_enable ) read_for_gi = bias_write_read ;
 			else read_for_gi = 1'd0 ;
 			// if( fsld_current_state == FS_KER ) read_for_gi = ker_write_read ;
 			// else if ( fsld_current_state == FS_BIAS ) read_for_gi = bias_write_read ;

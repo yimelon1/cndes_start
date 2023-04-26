@@ -8,7 +8,11 @@
 `define SHT_METHOD
 
 
-module kersram_w (
+module kersram_w 
+#(
+	parameter ADDR_CNT_BITS = 10 
+
+)(
 	clk,
 	reset,
 
@@ -32,13 +36,14 @@ module kersram_w (
 
 	ker_write_done 		,
 	ker_write_busy 		,
-	start_ker_write		
+	ker_write_en 		,
+	start_ker_write		,
+	cfg_kerw_buflength
 	
 );
 
 //---------- config parameter -----------------------
-parameter ADDR_CNT_BITS = 10;
-parameter KER_ST_LENGTH = 288;		// every layer has different kernel number and channels
+// parameter KER_ST_LENGTH = 288;		// every layer has different kernel number and channels
 
 
 	input wire clk ;
@@ -50,6 +55,7 @@ parameter KER_ST_LENGTH = 288;		// every layer has different kernel number and c
 
 	output reg 		ker_write_done 		;
 	output reg 		ker_write_busy 		;
+	output reg 		ker_write_en 		;
 	input wire 		start_ker_write		;
 
 	output reg cen_kersr_0 ;output reg wen_kersr_0 ;output reg [ ADDR_CNT_BITS -1 : 0 ] addr_kersr_0 ;output reg [ 64 -1 : 0 ] din_kersr_0 ;//----declare KER SRAM_0---------
@@ -61,27 +67,32 @@ parameter KER_ST_LENGTH = 288;		// every layer has different kernel number and c
 	output reg cen_kersr_6 ;output reg wen_kersr_6 ;output reg [ ADDR_CNT_BITS -1 : 0 ] addr_kersr_6 ;output reg [ 64 -1 : 0 ] din_kersr_6 ;//----declare KER SRAM_6---------
 	output reg cen_kersr_7 ;output reg wen_kersr_7 ;output reg [ ADDR_CNT_BITS -1 : 0 ] addr_kersr_7 ;output reg [ 64 -1 : 0 ] din_kersr_7 ;//----declare KER SRAM_7---------
 
+	input wire [ADDR_CNT_BITS-1:0		]	cfg_kerw_buflength	;
 
 
 
-reg [ 1 : 0 ] current_state ;
-reg [ 1 : 0 ] next_state ;
+reg [ 2 : 0 ] current_state ;
+reg [ 2 : 0 ] next_state ;
 
 //---------- done flag ------------------
 
-reg en_kerst_addrct_0 ;
-wire [ ADDR_CNT_BITS-1 : 0 ] addrct_0;
 
-parameter ST_IDLE	= 4'd10;
-parameter ST_K0 	= 4'd0;
-parameter ST_K1 	= 4'd1;
-parameter ST_K2 	= 4'd2;
-parameter ST_K3 	= 4'd3;
-parameter ST_K4 	= 4'd4;
-parameter ST_K5 	= 4'd5;
-parameter ST_K6 	= 4'd6;
-parameter ST_K7 	= 4'd7;
-parameter ST_DONE	= 4'd8;
+reg en_kerst_addrct_0 ;
+wire [ ADDR_CNT_BITS-1 : 0 ]	addrct_0		;
+wire [ ADDR_CNT_BITS-1 : 0 ]	addrct_final	;
+wire addrct_last	;
+
+//----    FSM Declare    -----
+localparam ST_IDLE	= 4'd10;
+localparam ST_K0 	= 4'd0;
+localparam ST_K1 	= 4'd1;
+localparam ST_K2 	= 4'd2;
+localparam ST_K3 	= 4'd3;
+localparam ST_K4 	= 4'd4;
+localparam ST_K5 	= 4'd5;
+localparam ST_K6 	= 4'd6;
+localparam ST_K7 	= 4'd7;
+localparam ST_DONE	= 4'd8;
 
 reg [3:0] st_current_state ;
 reg [3:0] st_next_state ;
@@ -117,14 +128,14 @@ reg [3:0] st_next_state ;
 	reg st_data_valid_7;
 	reg st_data_valid_8;
 
-	reg [ 10 : 0 ]st_datanum_1 ;
-	reg [ 10 : 0 ]st_datanum_2 ;
-	reg [ 10 : 0 ]st_datanum_3 ;
-	reg [ 10 : 0 ]st_datanum_4 ;
-	reg [ 10 : 0 ]st_datanum_5 ;
-	reg [ 10 : 0 ]st_datanum_6 ;
-	reg [ 10 : 0 ]st_datanum_7 ;
-	reg [ 10 : 0 ]st_datanum_8 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_1 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_2 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_3 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_4 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_5 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_6 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_7 ;
+	reg [ ADDR_CNT_BITS-1 : 0 ] st_datanum_8 ;
 `endif 
 
 
@@ -146,27 +157,60 @@ always @(posedge clk ) begin
 end
 always @(*) begin
 	case (st_current_state) 
-		ST_IDLE	: st_next_state = ( current_state == 2'd1 )? ST_K0 : ST_IDLE ;
-		ST_K0 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K1 : ST_K0 ;
-		ST_K1 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K2 : ST_K1 ;
-		ST_K2 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K3 : ST_K2 ;
-		ST_K3 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K4 : ST_K3 ;
-		ST_K4 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K5 : ST_K4 ;
-		ST_K5 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K6 : ST_K5 ;
-		ST_K6 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K7 : ST_K6 ;
-		ST_K7 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_DONE : ST_K7 ;
+		ST_IDLE	: st_next_state = ( current_state == 3'd1 )? ST_K0 : ST_IDLE ;
+		ST_K0 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_K1 : ST_K0 ;
+		ST_K1 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_K2 : ST_K1 ;
+		ST_K2 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_K3 : ST_K2 ;
+		ST_K3 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_K4 : ST_K3 ;
+		ST_K4 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_K5 : ST_K4 ;
+		ST_K5 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_K6 : ST_K5 ;
+		ST_K6 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_K7 : ST_K6 ;
+		ST_K7 	: st_next_state = ( en_kerst_addrct_0 & addrct_last )? ST_DONE : ST_K7 ;
 		ST_DONE	: st_next_state = ( st_state_sht_7	== ST_DONE ) ? ST_IDLE : ST_DONE ;
 		default: st_next_state = ST_IDLE;
 	endcase
 end
+// always @(*) begin
+// 	case (st_current_state) 
+// 		ST_IDLE	: st_next_state = ( current_state == 2'd1 )? ST_K0 : ST_IDLE ;
+// 		ST_K0 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K1 : ST_K0 ;
+// 		ST_K1 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K2 : ST_K1 ;
+// 		ST_K2 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K3 : ST_K2 ;
+// 		ST_K3 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K4 : ST_K3 ;
+// 		ST_K4 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K5 : ST_K4 ;
+// 		ST_K5 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K6 : ST_K5 ;
+// 		ST_K6 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_K7 : ST_K6 ;
+// 		ST_K7 	: st_next_state = ( en_kerst_addrct_0 &(addrct_0 == KER_ST_LENGTH-1) )? ST_DONE : ST_K7 ;
+// 		ST_DONE	: st_next_state = ( st_state_sht_7	== ST_DONE ) ? ST_IDLE : ST_DONE ;
+// 		default: st_next_state = ST_IDLE;
+// 	endcase
+// end
 
 
 // ============================================================================
 
-count_yi_v3 #(    .BITS_OF_END_NUMBER( ADDR_CNT_BITS  ) 
-    )cnt_staddr(.clk ( clk ), .reset ( reset ), .enable ( en_kerst_addrct_0 ), .cnt_q ( addrct_0 ),	
-    .final_number(	KER_ST_LENGTH	)	// it will count to final_num-1 then goes to zero
+
+
+
+count_yi_v4 #(
+    .BITS_OF_END_NUMBER (	ADDR_CNT_BITS	)
+)kr_cp(
+    .clk		( clk )
+    ,	.reset 	 		(	reset	)
+    ,	.enable	 		(	en_kerst_addrct_0	)
+
+	,	.final_number	(	addrct_final	)
+	,	.last			(	addrct_last	)
+    ,	.total_q		(	addrct_0	)
 );
+
+// count_yi_v3 #(    .BITS_OF_END_NUMBER( ADDR_CNT_BITS  ) 
+//     )cnt_staddr(.clk ( clk ), .reset ( reset ), .enable ( en_kerst_addrct_0 ), .cnt_q ( addrct_0 ),	
+//     .final_number(	KER_ST_LENGTH	)	// it will count to final_num-1 then goes to zero
+// );
+
+
+assign addrct_final = cfg_kerw_buflength ;
 
 always@( * )begin
 	en_kerst_addrct_0 = ker_write_empty_n_din & ker_write_read_dout ;
@@ -310,7 +354,7 @@ end
 // ============================================================================
 always @(posedge clk ) begin
 	if( reset )begin
-		current_state <= 2'd0;
+		current_state <= 3'd0;
 	end
 	else begin
 		current_state <= next_state	;
@@ -319,36 +363,42 @@ end
 
 always @(*) begin
 	case (current_state)
-		2'd0 : next_state = ( start_ker_write ) ? 2'd1 : 2'd0 ;
-		2'd1 : next_state = ( ker_write_done ) ?	2'd2 : 2'd1  ;
-		2'd2 : next_state = 2'd0 ;
+		3'd0 : next_state = ( start_ker_write ) ? 3'd1 : 3'd0 ;
+		3'd1 : next_state = ( st_current_state == ST_DONE ) ?	3'd2 : 3'd1  ;	//write enable
+		3'd2 : next_state = ( st_state_sht_7 == ST_DONE ) ?	3'd3 : 3'd2  ;	//write enable
+		3'd3 : next_state = 3'd0 ;
 
-		default: next_state = 2'd0;
+		default: next_state = 3'd0;
 	endcase
 end
 
 always @(*) begin
-	ker_write_busy = ( current_state == 2'd1 ) ? 1'd1 : 1'd0 ;
+	ker_write_busy = ( current_state == 3'd1 || current_state == 3'd2 || current_state == 3'd3 ) ? 1'd1 : 1'd0 ;
+	ker_write_en = ( current_state == 3'd1 ) ? 1'd1 : 1'd0 ;
 end
 
-always @(posedge clk ) begin
-	if( reset )begin
-		ker_write_done <= 1'd0;
-	end
-	else begin
-		if( ker_write_busy) begin
-			if( st_current_state == ST_DONE )begin
-				ker_write_done <= 1'd1;
-			end
-			else begin
-				ker_write_done <= 1'd0;
-			end
-		end
-		else begin
-			ker_write_done <= 1'd0;
-		end
-	end
+//----    write done    -----
+always @(*) begin
+	ker_write_done = ( current_state == 3'd3 ) ? 1'd1 : 1'd0 ;
 end
+// always @(posedge clk ) begin
+// 	if( reset )begin
+// 		ker_write_done <= 1'd0;
+// 	end
+// 	else begin
+// 		if( ker_write_busy) begin
+// 			if( st_state_sht_7 == ST_DONE )begin
+// 				ker_write_done <= 1'd1;
+// 			end
+// 			else begin
+// 				ker_write_done <= 1'd0;
+// 			end
+// 		end
+// 		else begin
+// 			ker_write_done <= 1'd0;
+// 		end
+// 	end
+// end
 
 
 

@@ -6,14 +6,14 @@
 // Ver      : 1.0
 // Func     : Quantization module output data fifo, avoid ot_module breaking
 // ============================================================================
-module yi_fifo (
+module ot_fifo (
 	clk			,
 	reset		,
 
 	valid_in 	,
 	data_in		,
 
-	error		,	// we loss output data cause something wrong
+	// error		,	// we loss output data cause something wrong
 
 
 	empty_n		,
@@ -32,10 +32,7 @@ reg                   empty		;
 reg                   full		;
 reg  [DEPTH_BITS-1:0] index		;
 reg  [DATA_BITS-1:0]  mem[0:DEPTH-1];
-//------------------------Body---------------------------
-assign empty_n = ~empty		;
-assign full_n  = ~full		;
-assign data_out    = mem[index]	;
+
 //------------------------I/O----------------------------
 
 input	wire 						clk			;
@@ -47,10 +44,18 @@ output	wire 						empty_n		;
 input	wire 						read		;
 output	wire 	[ DATA_BITS-1: 0 ]	data_out	;
 
-output	wire 						error		;	// we loss output data cause something wrong
+// output	wire 						error		;	// we loss output data cause something wrong
+wire 						error		;	// we loss output data cause something wrong
 
 //-----------------------------------------------------------------------------
 wire write ;
+
+
+//------------------------Body---------------------------
+assign empty_n = ~empty		;
+assign full_n  = ~full		;
+assign data_out    = mem[index]	;
+//-----------------------------------------------------------------------------
 
 assign write = valid_in ;
 assign error = ( full & valid_in ) ? 1'd1 : 1'd0 ;

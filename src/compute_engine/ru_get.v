@@ -10,82 +10,89 @@
 
 module getpe_result #(
 	parameter INV_BITS = 1 ,		// input valid bits
-	parameter QOUT_BITS = 32		// quantize output bits
+	parameter OUTQ_BITS = 32		// output bits for quantization
 ) (
-	clk ,
-	reset ,
-	pe0_result ,
-	pe1_result ,
-	pe2_result ,
-	pe3_result ,
-	pe4_result ,
-	pe5_result ,
-	pe6_result ,
-	pe7_result ,
-	pe0_actsum ,
-	pe1_actsum ,
-	pe2_actsum ,
-	pe3_actsum ,
-	pe4_actsum ,
-	pe5_actsum ,
-	pe6_actsum ,
-	pe7_actsum ,
-	valid_out ,
-	serial_result ,
-	serial_actresult ,
+	clk			
+	,	reset				
+	,	pe0_result 			
+	,	pe1_result 			
+	,	pe2_result 			
+	,	pe3_result 			
+	,	pe4_result 			
+	,	pe5_result 			
+	,	pe6_result 			
+	,	pe7_result 			
+	,	pe0_actsum 			
+	,	pe1_actsum 			
+	,	pe2_actsum 			
+	,	pe3_actsum 			
+	,	pe4_actsum 			
+	,	pe5_actsum 			
+	,	pe6_actsum 			
+	,	pe7_actsum 			
+	,	valid_out 			
+	,	serial_result 		
+	,	serial_actresult 	
 );
-	
+
+//==============================================================================
+//========    I/O port declare    ========
+//==============================================================================
+
 input wire			clk 		;
 input wire			reset 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe0_result 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe1_result 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe2_result 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe3_result 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe4_result 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe5_result 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe6_result 		;
-input wire	[ QOUT_BITS + INV_BITS - 1 : 0 ]		pe7_result 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe0_actsum 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe1_actsum 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe2_actsum 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe3_actsum 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe4_actsum 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe5_actsum 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe6_actsum 		;
-input wire	[ QOUT_BITS - 1 : 0 ]		pe7_actsum 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe0_result 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe1_result 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe2_result 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe3_result 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe4_result 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe5_result 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe6_result 		;
+input wire	[ OUTQ_BITS + INV_BITS - 1 : 0 ]		pe7_result 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe0_actsum 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe1_actsum 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe2_actsum 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe3_actsum 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe4_actsum 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe5_actsum 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe6_actsum 		;
+input wire	[ OUTQ_BITS - 1 : 0 ]		pe7_actsum 		;
 
 output reg						valid_out 		;
-output reg	[ QOUT_BITS - 1: 0 ]			serial_result		;
-output reg	[ QOUT_BITS - 1: 0 ]			serial_actresult		;
+output reg	[ OUTQ_BITS - 1: 0 ]			serial_result		;
+output reg	[ OUTQ_BITS - 1: 0 ]			serial_actresult		;
 
+//-----------------------------------------------------------------------------
+//----    declare    -----
 wire [ 7:0 ] valid_in ;
 reg signed [ 31 : 0 ] data_choose ;
 reg signed [ 31 : 0 ] actsum_choose ;
 
+//-----------------------------------------------------------------------------
 
 
 assign valid_in = { 
-	pe0_result[ QOUT_BITS + INV_BITS-1  -: 1 ],
-	pe1_result[ QOUT_BITS + INV_BITS-1  -: 1 ],
-	pe2_result[ QOUT_BITS + INV_BITS-1  -: 1 ],
-	pe3_result[ QOUT_BITS + INV_BITS-1  -: 1 ],
-	pe4_result[ QOUT_BITS + INV_BITS-1  -: 1 ],
-	pe5_result[ QOUT_BITS + INV_BITS-1  -: 1 ],
-	pe6_result[ QOUT_BITS + INV_BITS-1  -: 1 ],
-	pe7_result[ QOUT_BITS + INV_BITS-1  -: 1 ]
+	pe0_result[ OUTQ_BITS + INV_BITS-1  -: 1 ],
+	pe1_result[ OUTQ_BITS + INV_BITS-1  -: 1 ],
+	pe2_result[ OUTQ_BITS + INV_BITS-1  -: 1 ],
+	pe3_result[ OUTQ_BITS + INV_BITS-1  -: 1 ],
+	pe4_result[ OUTQ_BITS + INV_BITS-1  -: 1 ],
+	pe5_result[ OUTQ_BITS + INV_BITS-1  -: 1 ],
+	pe6_result[ OUTQ_BITS + INV_BITS-1  -: 1 ],
+	pe7_result[ OUTQ_BITS + INV_BITS-1  -: 1 ]
 	}	;
 
 
 always@(*)begin
 	case (valid_in)
-		8'b1000_0000: data_choose = { pe0_result[ QOUT_BITS -1  -: 32 ]};
-		8'b0100_0000: data_choose = { pe1_result[ QOUT_BITS -1  -: 32 ]};
-		8'b0010_0000: data_choose = { pe2_result[ QOUT_BITS -1  -: 32 ]};
-		8'b0001_0000: data_choose = { pe3_result[ QOUT_BITS -1  -: 32 ]};
-		8'b0000_1000: data_choose = { pe4_result[ QOUT_BITS -1  -: 32 ]};
-		8'b0000_0100: data_choose = { pe5_result[ QOUT_BITS -1  -: 32 ]};
-		8'b0000_0010: data_choose = { pe6_result[ QOUT_BITS -1  -: 32 ]};
-		8'b0000_0001: data_choose = { pe7_result[ QOUT_BITS -1  -: 32 ]};
+		8'b1000_0000: data_choose = { pe0_result[ OUTQ_BITS -1  -: 32 ]};
+		8'b0100_0000: data_choose = { pe1_result[ OUTQ_BITS -1  -: 32 ]};
+		8'b0010_0000: data_choose = { pe2_result[ OUTQ_BITS -1  -: 32 ]};
+		8'b0001_0000: data_choose = { pe3_result[ OUTQ_BITS -1  -: 32 ]};
+		8'b0000_1000: data_choose = { pe4_result[ OUTQ_BITS -1  -: 32 ]};
+		8'b0000_0100: data_choose = { pe5_result[ OUTQ_BITS -1  -: 32 ]};
+		8'b0000_0010: data_choose = { pe6_result[ OUTQ_BITS -1  -: 32 ]};
+		8'b0000_0001: data_choose = { pe7_result[ OUTQ_BITS -1  -: 32 ]};
 		default: data_choose = 32'd0 ;
 	endcase
 end
@@ -111,7 +118,7 @@ always@( posedge clk )begin
 		valid_out <= 0;
 	end
 	else begin
-		if(  valid_in !== 8'd0 )begin
+		if(  valid_in != 8'd0 )begin
 			serial_result <= data_choose ;
 			serial_actresult <= actsum_choose ;
 			valid_out <= 1;

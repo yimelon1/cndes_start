@@ -4,6 +4,7 @@
 // Ver      : 1.0
 // Func     : bias sram read module
 // 		2022.12.06	: 8&16 kernel number case and 8&16 input channel case
+// 		2023.04.10	: If kernel number <8 then change  cfg_bir_rg_prep=kernel number
 // ============================================================================
 
 // ============================================================================
@@ -23,7 +24,9 @@
 //      Test Muxes                  Off
 // ============================================================================
 
-module biassram_r (
+module biassram_r #(
+    parameter ADDR_CNT_BITS = 9
+)(
 	clk,
 	reset,
 
@@ -76,20 +79,20 @@ module biassram_r (
 	tag_bias_next_7		,
 
 
-
 	bias_rd1st_start	,
 	bias_rd1st_busy		,
 	bias_rd1st_done		,
 
 	bias_read_done 		,
 	bias_read_busy 		,
-	start_bias_read		
+	start_bias_read		,
+	cfg_bir_rg_prep
 
 
 );
 
 //---------- config parameter -----------------------
-parameter ADDR_CNT_BITS = 9;
+// parameter ADDR_CNT_BITS = 9;
 parameter BIREG_PREPARE = 8;		// BIAS register prepare number. 
 									// if (kernel_number <8 ) BIREG_PREPARE = kernel_number ; 
 									// else BIREG_PREPARE = 8 ; for every kernel sram.
@@ -123,6 +126,8 @@ localparam BIAS_WORD_LENGTH = 32;
 	input wire 				bias_rd1st_start 	;
 	output reg 				bias_rd1st_busy 	;
 	output reg 				bias_rd1st_done 	;
+
+
 
 
 // ====		replace bias reg		====
@@ -162,8 +167,11 @@ output reg [BUF_TAG_BITS-1 : 0 ] tag_bias_next_5	;
 output reg [BUF_TAG_BITS-1 : 0 ] tag_bias_next_6	;
 output reg [BUF_TAG_BITS-1 : 0 ] tag_bias_next_7	;
 
-
-
+//-----------------------------------------------------------------------------
+input wire [ ADDR_CNT_BITS - 1 : 0 ]	cfg_bir_rg_prep	;//9bits	//cfg for bias read register prepare
+	// BIAS register prepare number. 
+	// if (kernel_number <8 ) BIREG_PREPARE = kernel_number ; 
+	// else BIREG_PREPARE = 8 ; for every kernel sram.
 
 // =====	busy & done		FSM		======================
 reg [2:0] current_state ;
@@ -179,12 +187,17 @@ reg rd_first1_done ;	// for done signal !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 reg rd_first2_done ;	// for done signal !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // ====		sram address counter		====
-wire [ADDR_CNT_BITS-1:0]cnt_inbias;
+
+wire [ADDR_CNT_BITS-1:0]	cnt_inbias		;
+wire [ADDR_CNT_BITS-1:0]	cnt_ib_final	;
+wire en_ib_cnt ;
+wire cnt_inbias_last	;
+wire cnt_ib_nyet ;
+// wire cnt_inbias_last_n ;
+
 reg [BUF_TAG_BITS-1:0]cpker_p1;
-wire en_in_cnt ;
-wire cnt_inbias_last ;
-reg en_in_cnt_dly0 ;
-reg en_in_cnt_dly1 ;
+reg en_ib_cnt_dly0 ;
+reg en_ib_cnt_dly1 ;
 wire valid_read_data ;
 
 // ====		sram signal delay		====
@@ -193,7 +206,7 @@ reg [9-1 : 0 ] srrd_addr_dly0 ;
 reg [9-1 : 0 ] srrd_addr_dly1 ;
 
 // ====		check kernel computed number		====
-reg [ 9 : 0 ] cp_bias_curr ;
+// reg [ 9 : 0 ] cp_bias_curr ;
 
 
 
@@ -347,7 +360,7 @@ always @(*) begin
 															RD_BASE ;	// till conv done take kernel module read done 
 
 		RD_BASE_DL0 : rd_next_state = RD_NXLOAD_SW ;	// delay for cpker_p1 stable, next state will check final kernel number is coming or not.
-		RD_NXLOAD_SW : rd_next_state = ( cpker_p1 > BIREG_PREPARE-1 )? RD_BASE : 			// if final kernel number is coming, cause it's no longer necessary to read bias sram. just sw.
+		RD_NXLOAD_SW : rd_next_state = ( cpker_p1 > cnt_ib_final )? RD_BASE : 			// switch_state. if final kernel number is coming, cause it's no longer necessary to read bias sram. just sw.
 																			RD_NXLOAD_RS ;	// before next num bias read switch current bias buffer value 
 		RD_NXLOAD_RS : rd_next_state = ( cnt_inbias_last ) ? RD_NXLOAD_HD : RD_NXLOAD_RS ;	// control read address counter "cnt_inbias"
 		RD_NXLOAD_HD : rd_next_state = ( rd_nxload_done ) ? RD_BASE : RD_NXLOAD_HD ;	 
@@ -358,33 +371,67 @@ end
 
 
 always @(*) begin
-	rd_first1_done = ( (rd_current_state== RD_FIRST_HD_1) & (srrd_addr_dly1 == BIREG_PREPARE-1 )) ? 1'd1 : 1'd0;
-	rd_first2_done = ( (rd_current_state== RD_FIRST_HD_2) & (srrd_addr_dly1 == BIREG_PREPARE-1 )) ? 1'd1 : 1'd0;
-	rd_nxload_done = ( (rd_current_state== RD_NXLOAD_HD) & (srrd_addr_dly1 == BIREG_PREPARE-1 )) ? 1'd1 : 1'd0;
+	rd_first1_done = ( (rd_current_state== RD_FIRST_HD_1) & (srrd_addr_dly1 == cnt_ib_final )) ? 1'd1 : 1'd0;
+	rd_first2_done = ( (rd_current_state== RD_FIRST_HD_2) & (srrd_addr_dly1 == cnt_ib_final )) ? 1'd1 : 1'd0;
+	rd_nxload_done = ( (rd_current_state== RD_NXLOAD_HD) & (srrd_addr_dly1 == cnt_ib_final )) ? 1'd1 : 1'd0;
+	// rd_first1_done = ( (rd_current_state== RD_FIRST_HD_1) & (srrd_addr_dly1 == BIREG_PREPARE-1 )) ? 1'd1 : 1'd0;
+	// rd_first2_done = ( (rd_current_state== RD_FIRST_HD_2) & (srrd_addr_dly1 == BIREG_PREPARE-1 )) ? 1'd1 : 1'd0;
+	// rd_nxload_done = ( (rd_current_state== RD_NXLOAD_HD) & (srrd_addr_dly1 == BIREG_PREPARE-1 )) ? 1'd1 : 1'd0;
 	rd_first_done = rd_first2_done	;
 end
 
 // -------------------------
-// If kernel number <8 then change 
 
 
+count_yi_v4 #(
+    .BITS_OF_END_NUMBER (	ADDR_CNT_BITS	)
+)rebias_cnt00(
+    .clk		( clk )
+    ,	.reset 	 		(	reset	)
+    ,	.enable	 		(	en_ib_cnt	)
 
-count_yi_v3 #(    .BITS_OF_END_NUMBER( ADDR_CNT_BITS  ) 
-    ) rebias_cnt00(.clk ( clk ), .reset ( reset ), .enable ( en_in_cnt ), .cnt_q ( cnt_inbias ),	
-    .final_number(	BIREG_PREPARE	)	// it will count to final_num-1 then goes to zero
+	,	.final_number	(	cnt_ib_final	)
+	,	.last			(	cnt_inbias_last		)
+    ,	.total_q		(	cnt_inbias	)
 );
 
-assign cnt_inbias_last = (  cnt_inbias == BIREG_PREPARE-1 )? 1'd1 : 1'd0 ;
-assign en_in_cnt = ( (rd_current_state== RD_FIRST_RS_1) & (cnt_inbias <= BIREG_PREPARE-1 )) ? 				1'd1	:	
-					( (rd_current_state== RD_FIRST_RS_2) & (cnt_inbias <= BIREG_PREPARE-1 )) ? 				1'd1	:	
-						( (rd_current_state== RD_NXLOAD_RS) & (cnt_inbias <= BIREG_PREPARE-1 )  ) ?  1'd1	: 1'd0 ;
+// count_yi_v3 #(    .BITS_OF_END_NUMBER( ADDR_CNT_BITS  ) 
+//     ) rebias_cnt00(.clk ( clk ), .reset ( reset ), .enable ( en_ib_cnt ), .cnt_q ( cnt_inbias ),	
+//     .final_number(	BIREG_PREPARE	)	// it will count to final_num-1 then goes to zero
+// );
+// assign cnt_inbias_last = (  cnt_inbias == BIREG_PREPARE-1 )? 1'd1 : 1'd0 ;
 
-assign cen_biasr_0 = ( (rd_current_state== RD_FIRST_RS_1)  | (rd_current_state== RD_NXLOAD_RS ) | (rd_current_state== RD_FIRST_RS_2) ) ? ~en_in_cnt : 1'd1		;
+// assign cnt_inbias_last_n = ~cnt_inbias_last ;
+
+assign cnt_ib_final = cfg_bir_rg_prep -1 ;
+assign cnt_ib_nyet = (cnt_inbias <= cnt_ib_final )? 1'd1 : 1'd0 ;
+
+assign en_ib_cnt = ( (rd_current_state== RD_FIRST_RS_1) && cnt_ib_nyet) ? 			1'd1	:	
+					( (rd_current_state== RD_FIRST_RS_2) && cnt_ib_nyet) ? 			1'd1	:	
+						( (rd_current_state== RD_NXLOAD_RS) && cnt_ib_nyet  ) ?		1'd1	: 1'd0 ;
+
+// assign en_ib_cnt = ( (rd_current_state== RD_FIRST_RS_1) & (cnt_inbias <= BIREG_PREPARE-1 )) ? 				1'd1	:	
+// 					( (rd_current_state== RD_FIRST_RS_2) & (cnt_inbias <= BIREG_PREPARE-1 )) ? 				1'd1	:	
+// 						( (rd_current_state== RD_NXLOAD_RS) & (cnt_inbias <= BIREG_PREPARE-1 )  ) ?  1'd1	: 1'd0 ;
+
+//-----error_here-----------error_here-----------error_here------------error_here--------------------------------------
+//----    this assignment occurs a combinational loop ,Cause enable is used by last in count_yi_v4 module   -----
+//----    "The values of en_ib_cnt and cnt_inbias_last depend on each other, forming a combinational logic loop."    ----
+// assign en_ib_cnt = ( (rd_current_state== RD_FIRST_RS_1) & !cnt_inbias_last ) ? 				1'd1	:	
+// 					( (rd_current_state== RD_FIRST_RS_2) & !cnt_inbias_last ) ? 				1'd1	:	
+// 						( (rd_current_state== RD_NXLOAD_RS) & !cnt_inbias_last ) ?  1'd1	: 1'd0 ;
+//-----error_here-----------error_here-----------error_here-------------error_here-------------------------------------
+
+
+assign cen_biasr_0 = ( (rd_current_state== RD_FIRST_RS_1)  | (rd_current_state== RD_NXLOAD_RS ) | (rd_current_state== RD_FIRST_RS_2) ) ? ~en_ib_cnt : 1'd1		;
 
 assign wen_biasr_0 = 1'd1		;
+// assign addr_biasr_0 = ( (rd_current_state== RD_FIRST_RS_1)  ) ? cnt_inbias : 
+// 						( (rd_current_state== RD_FIRST_RS_2)  ) ? cnt_inbias + 9'd8 : 
+// 							(rd_current_state== RD_NXLOAD_RS ) ?  cnt_inbias + cpker_p1*BIREG_PREPARE : 9'd0		;
 assign addr_biasr_0 = ( (rd_current_state== RD_FIRST_RS_1)  ) ? cnt_inbias : 
 						( (rd_current_state== RD_FIRST_RS_2)  ) ? cnt_inbias + 9'd8 : 
-							(rd_current_state== RD_NXLOAD_RS ) ?  cnt_inbias + cpker_p1*BIREG_PREPARE : 9'd0		;
+							(rd_current_state== RD_NXLOAD_RS ) ?  cnt_inbias + cpker_p1*cfg_bir_rg_prep : 9'd0		;
 
 
 always @(posedge clk ) begin
@@ -397,11 +444,11 @@ always @(posedge clk ) begin
 end
 
 
-assign valid_read_data = en_in_cnt_dly1 ;
+assign valid_read_data = en_ib_cnt_dly1 ;
 
 always @(posedge clk ) begin
-	en_in_cnt_dly0 <= en_in_cnt ;
-	en_in_cnt_dly1 <= en_in_cnt_dly0 ;
+	en_ib_cnt_dly0 <= en_ib_cnt ;
+	en_ib_cnt_dly1 <= en_ib_cnt_dly0 ;
 end
 
 
@@ -674,7 +721,7 @@ always @( posedge clk ) begin
         case (rd_current_state)
             RD_NXLOAD_SW	:	bias_reg_curr_0<=bias_reg_next_0;
             RD_FIRST_RS_1,RD_FIRST_HD_1	:	begin
-                if( en_in_cnt_dly1 & (srrd_addr_dly1 == 0)) bias_reg_curr_0 <= dout_biasr_0_dly0 ;
+                if( en_ib_cnt_dly1 & (srrd_addr_dly1 == 0)) bias_reg_curr_0 <= dout_biasr_0_dly0 ;
                 else bias_reg_curr_0 <= bias_reg_curr_0 ;
             end
             default: bias_reg_curr_0<=bias_reg_curr_0;
@@ -801,11 +848,11 @@ always @( posedge clk ) begin
     else begin
         case (rd_current_state)
             RD_FIRST_RS_2,RD_FIRST_HD_2	: 	begin
-                if( en_in_cnt_dly1 & (srrd_addr_dly1 == 0))bias_reg_next_0 <= dout_biasr_0_dly0 ;
+                if( en_ib_cnt_dly1 & (srrd_addr_dly1 == 0))bias_reg_next_0 <= dout_biasr_0_dly0 ;
                 else bias_reg_next_0 <= bias_reg_next_0 ;
             end
             RD_NXLOAD_RS,RD_NXLOAD_HD	: 	begin
-                if( en_in_cnt_dly1 & (srrd_addr_dly1 == 0))bias_reg_next_0 <= dout_biasr_0_dly0 ;
+                if( en_ib_cnt_dly1 & (srrd_addr_dly1 == 0))bias_reg_next_0 <= dout_biasr_0_dly0 ;
                 else bias_reg_next_0 <= bias_reg_next_0 ;
             end
             default: bias_reg_next_0 <= bias_reg_next_0;

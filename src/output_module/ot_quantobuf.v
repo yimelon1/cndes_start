@@ -6,14 +6,14 @@
 // ============================================================================
 
 module ot_qtbuf (
-	clk			,
-	reset		,
+	clk				
+	,	reset			
 	
-	q_out		,
-	q_valid		,
+	,	q_result_din	
+	,	q_valid_din		
 	
-	out64bits	,
-	valid_out	
+	,	out64bits		
+	,	valid_out		
 
 );
 
@@ -21,14 +21,15 @@ module ot_qtbuf (
 localparam FSM_BITS = 2 ;
 localparam IDLE = 2'd0 ;
 localparam OTPT = 2'd1 ;
-//-----------------------------------------------------------------------------
 
-
+//==============================================================================
+//========    I/O Signal Declare    ========
+//==============================================================================
 	input clk			;
 	input reset			;
 	
-	input q_valid		;
-	input [ 8-1:0 ]	q_out	;	//from quantize module
+	input q_valid_din		;
+	input [ 8-1:0 ]	q_result_din	;	//from quantize module
 
 	output wire [ 64-1:0 ] out64bits ;
 	output wire valid_out ;
@@ -37,9 +38,9 @@ localparam OTPT = 2'd1 ;
 
 integer i ;
 //---- delay buf ----
-reg [8-1:0] q_out_dly0 ;
-reg [8-1:0] q_out_dly1 ;
-reg [8-1:0] q_out_dly2 ;
+reg [8-1:0] q_result_dly0 ;
+reg [8-1:0] q_result_dly1 ;
+reg [8-1:0] q_result_dly2 ;
 
 reg [3-1:0] cnt_d ;
 reg [8-1:0] array [0:7];
@@ -90,8 +91,8 @@ always @(posedge clk ) begin
 		q8_data_fetch <= 8'd0 ;
 	end
 	else begin
-		if( q_valid )begin
-			q8_data_fetch <= q_out ;
+		if( q_valid_din )begin
+			q8_data_fetch <= q_result_din ;
 		end
 		else begin
 			q8_data_fetch <= q8_data_fetch ;
@@ -99,7 +100,7 @@ always @(posedge clk ) begin
 	end
 end
 always @(posedge clk ) begin
-	q8_valid_fetch <= q_valid ;
+	q8_valid_fetch <= q_valid_din ;
 end
 //-----------------------------------------------------------------------------
 
@@ -188,9 +189,9 @@ end
 
 
 always @(posedge clk ) begin
-	q_out_dly0 <= q_out ;
-	q_out_dly1 <= q_out_dly0 ;
-	q_out_dly2 <= q_out_dly1 ;
+	q_result_dly0 <= q_result_din ;
+	q_result_dly1 <= q_result_dly0 ;
+	q_result_dly2 <= q_result_dly1 ;
 
 	final_cnt_dly0 <=  final_cnt ;
 	final_cnt_dly1 <=  final_cnt_dly0 ;
